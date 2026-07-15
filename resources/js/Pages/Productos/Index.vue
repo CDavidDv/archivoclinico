@@ -3,11 +3,14 @@ import { Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
+import { confirmarEliminar } from '@/lib/swal';
 
 defineProps({ productos: Array });
 
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '');
-const eliminar = (p) => confirm('¿Eliminar este producto?') && router.delete(route('productos.destroy', p.id));
+const eliminar = async (p) => {
+    if (await confirmarEliminar('¿Eliminar este producto?')) router.delete(route('productos.destroy', p.id));
+};
 </script>
 
 <template>

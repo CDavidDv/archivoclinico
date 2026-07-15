@@ -3,10 +3,13 @@ import { Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
+import { confirmarEliminar } from '@/lib/swal';
 
 defineProps({ medicamentos: Array });
 
-const eliminar = (m) => confirm('¿Eliminar este medicamento?') && router.delete(route('medicamentos.destroy', m.id));
+const eliminar = async (m) => {
+    if (await confirmarEliminar('¿Eliminar este medicamento?')) router.delete(route('medicamentos.destroy', m.id));
+};
 </script>
 
 <template>

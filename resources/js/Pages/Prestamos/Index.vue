@@ -3,6 +3,7 @@ import { Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
+import { confirmarEliminar } from '@/lib/swal';
 
 defineProps({ prestamos: Array });
 
@@ -13,7 +14,9 @@ const badge = (e) => ({
     pendiente: 'bg-amber-100 text-amber-800',
 }[e] || 'bg-gray-100 text-gray-700');
 
-const eliminar = (p) => confirm('¿Eliminar este préstamo?') && router.delete(route('prestamos.destroy', p.id));
+const eliminar = async (p) => {
+    if (await confirmarEliminar('¿Eliminar este préstamo?')) router.delete(route('prestamos.destroy', p.id));
+};
 </script>
 
 <template>

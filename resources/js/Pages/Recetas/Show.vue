@@ -4,6 +4,7 @@ import { Link, router, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
+import { confirmarAccion } from '@/lib/swal';
 
 const props = defineProps({ receta: Object });
 
@@ -24,7 +25,10 @@ const badge = (e) => ({
 const puedeCancelar = computed(() => props.receta.estatus === 'pendiente');
 const puedeDispensar = computed(() => ['pendiente', 'parcial'].includes(props.receta.estatus));
 
-const cancelar = () => confirm('¿Cancelar esta receta?') && router.put(route('recetas.cancelar', props.receta.id));
+const cancelar = async () => {
+    if (await confirmarAccion('¿Cancelar esta receta?', { title: 'Cancelar receta', confirmButtonText: 'Sí, cancelar', icon: 'warning' }))
+        router.put(route('recetas.cancelar', props.receta.id));
+};
 </script>
 
 <template>

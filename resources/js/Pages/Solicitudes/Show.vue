@@ -6,6 +6,7 @@ import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextareaField from '@/Components/Field/Textarea.vue';
+import { confirmarAccion } from '@/lib/swal';
 
 const props = defineProps({ solicitud: Object });
 
@@ -24,7 +25,10 @@ const badge = (e) => ({
     rechazada: 'bg-red-100 text-red-700',
 }[e] || 'bg-gray-100 text-gray-700');
 
-const aprobar = () => confirm('¿Aprobar esta solicitud?') && router.put(route('solicitudes.aprobar', props.solicitud.id));
+const aprobar = async () => {
+    if (await confirmarAccion('¿Aprobar esta solicitud?', { title: 'Aprobar solicitud', confirmButtonText: 'Sí, aprobar' }))
+        router.put(route('solicitudes.aprobar', props.solicitud.id));
+};
 
 const mostrarRechazo = ref(false);
 const rechazoForm = useForm({ motivo_rechazo: '' });

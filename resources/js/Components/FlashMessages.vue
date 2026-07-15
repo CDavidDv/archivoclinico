@@ -1,19 +1,20 @@
 <script setup>
-import { computed } from 'vue';
+import { watch } from 'vue';
 import { usePage } from '@inertiajs/vue3';
+import { toastExito, toastError } from '@/lib/swal';
 
 const page = usePage();
-const success = computed(() => page.props.flash?.success);
-const error = computed(() => page.props.flash?.error);
+
+watch(
+    () => page.props.flash,
+    (flash) => {
+        if (flash?.success) toastExito(flash.success);
+        if (flash?.error) toastError(flash.error);
+    },
+    { immediate: true, deep: true }
+);
 </script>
 
 <template>
-    <div v-if="success || error" class="mb-4 space-y-2">
-        <div v-if="success" class="rounded-md bg-emerald-50 border border-emerald-200 px-4 py-3 text-sm text-emerald-800 shadow-sm">
-            {{ success }}
-        </div>
-        <div v-if="error" class="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-800 shadow-sm">
-            {{ error }}
-        </div>
-    </div>
+    <!-- Los mensajes flash ahora se muestran como toasts de SweetAlert2. -->
 </template>

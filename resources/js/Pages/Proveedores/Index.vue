@@ -3,13 +3,14 @@ import { Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
+import { confirmarEliminar } from '@/lib/swal';
 
 defineProps({
     proveedores: Array,
 });
 
-const eliminar = (proveedor) => {
-    if (confirm('¿Eliminar este proveedor?')) {
+const eliminar = async (proveedor) => {
+    if (await confirmarEliminar('¿Eliminar este proveedor?')) {
         router.delete(route('proveedores.destroy', proveedor.id));
     }
 };

@@ -3,10 +3,13 @@ import { Link, router } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
+import { confirmarEliminar } from '@/lib/swal';
 
 defineProps({ personalArchivos: Array });
 
-const eliminar = (p) => confirm('¿Eliminar este personal?') && router.delete(route('personal_archivos.destroy', p.id));
+const eliminar = async (p) => {
+    if (await confirmarEliminar('¿Eliminar este personal?')) router.delete(route('personal_archivos.destroy', p.id));
+};
 </script>
 
 <template>

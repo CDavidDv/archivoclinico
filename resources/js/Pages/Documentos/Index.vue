@@ -4,11 +4,14 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
 import Pagination from '@/Components/Pagination.vue';
+import { confirmarEliminar } from '@/lib/swal';
 
 defineProps({ documentos: Object });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
-const eliminar = (d) => confirm('¿Eliminar este documento?') && router.delete(route('documentos.destroy', d.id));
+const eliminar = async (d) => {
+    if (await confirmarEliminar('¿Eliminar este documento?')) router.delete(route('documentos.destroy', d.id));
+};
 </script>
 
 <template>

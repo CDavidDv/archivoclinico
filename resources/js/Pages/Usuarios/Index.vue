@@ -4,13 +4,16 @@ import { computed } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
+import { confirmarEliminar } from '@/lib/swal';
 
 defineProps({ usuarios: Array });
 
 const page = usePage();
 const miId = computed(() => page.props.auth?.user?.id);
 
-const eliminar = (u) => confirm('¿Eliminar este usuario?') && router.delete(route('usuarios.destroy', u.id));
+const eliminar = async (u) => {
+    if (await confirmarEliminar('¿Eliminar este usuario?')) router.delete(route('usuarios.destroy', u.id));
+};
 </script>
 
 <template>
