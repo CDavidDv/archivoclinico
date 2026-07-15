@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\DerechoHabiente;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -11,11 +12,11 @@ class DerechoHabienteController extends Controller
 {
     public function index() {
         $derechoHabientes = DerechoHabiente::all();
-        return view('derecho_habientes.index', compact('derechoHabientes'));
+        return Inertia::render('DerechoHabientes/Index', compact('derechoHabientes'));
     }
 
     public function create() {
-        return view('derecho_habientes.create');
+        return Inertia::render('DerechoHabientes/Create');
     }
 
    
@@ -90,12 +91,12 @@ class DerechoHabienteController extends Controller
 
     public function show($id) {
         $dh = DerechoHabiente::findOrFail($id);
-        return view('derecho_habientes.show', compact('dh'));
+        return Inertia::render('DerechoHabientes/Show', compact('dh'));
     }
 
     public function edit($id) {
         $dh = DerechoHabiente::findOrFail($id);
-        return view('derecho_habientes.edit', compact('dh'));
+        return Inertia::render('DerechoHabientes/Edit', compact('dh'));
     }
 
 

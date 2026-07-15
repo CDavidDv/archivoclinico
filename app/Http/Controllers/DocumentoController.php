@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Documento;
 use App\Models\Expediente;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class DocumentoController extends Controller
             ->orderByDesc('fecha_anexo')
             ->paginate(20);
 
-        return view('documentos.index', compact('documentos'));
+        return Inertia::render('Documentos/Index', compact('documentos'));
     }
 
     /*
@@ -34,7 +35,7 @@ class DocumentoController extends Controller
     {
         $expedientes = Expediente::orderBy('codigo')->get();
 
-        return view('documentos.create', compact('expedientes'));
+        return Inertia::render('Documentos/Create', compact('expedientes'));
     }
 
     /*
@@ -105,7 +106,7 @@ class DocumentoController extends Controller
         $documento = Documento::with('expediente.derechoHabiente')
             ->findOrFail($id);
 
-        return view('documentos.show', compact('documento'));
+        return Inertia::render('Documentos/Show', compact('documento'));
     }
 
     /*
@@ -119,7 +120,7 @@ class DocumentoController extends Controller
 
         $expedientes = Expediente::orderBy('codigo')->get();
 
-        return view('documentos.edit', compact('documento', 'expedientes'));
+        return Inertia::render('Documentos/Edit', compact('documento', 'expedientes'));
     }
 
     /*

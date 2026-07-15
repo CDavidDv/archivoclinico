@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Medico;
 use Illuminate\Http\Request;
 
@@ -9,11 +10,11 @@ class MedicoController extends Controller
 {
     public function index() {
         $medicos = Medico::all();
-        return view('medicos.index', compact('medicos'));
+        return Inertia::render('Medicos/Index', compact('medicos'));
     }
 
     public function create() {
-        return view('medicos.create');
+        return Inertia::render('Medicos/Create');
     }
 
     public function store(Request $request) {
@@ -37,12 +38,12 @@ class MedicoController extends Controller
 
     public function show($id) {
         $medico = Medico::with('prestamos')->findOrFail($id);
-        return view('medicos.show', compact('medico'));
+        return Inertia::render('Medicos/Show', compact('medico'));
     }
 
     public function edit($id) {
         $medico = Medico::findOrFail($id);
-        return view('medicos.edit', compact('medico'));
+        return Inertia::render('Medicos/Edit', compact('medico'));
     }
 
     public function update(Request $request, $id) {

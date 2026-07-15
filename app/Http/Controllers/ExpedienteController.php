@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Expediente;
 use App\Models\DerechoHabiente;
 use Illuminate\Http\Request;
@@ -10,13 +11,13 @@ class ExpedienteController extends Controller
     public function index()
     {
         $expedientes = Expediente::with('derechoHabiente')->get();
-        return view('expedientes.index', compact('expedientes'));
+        return Inertia::render('Expedientes/Index', compact('expedientes'));
     }
 
     public function create()
     {
         $derechoHabientes = DerechoHabiente::all();
-        return view('expedientes.create', compact('derechoHabientes'));
+        return Inertia::render('Expedientes/Create', compact('derechoHabientes'));
     }
 
     public function store(Request $request)
@@ -38,7 +39,7 @@ class ExpedienteController extends Controller
         $expediente = Expediente::with(['derechoHabiente','documentos','prestamos'])
                                 ->findOrFail($id);
 
-        return view('expedientes.show', compact('expediente'));
+        return Inertia::render('Expedientes/Show', compact('expediente'));
     }
 
     public function edit($id)
@@ -46,7 +47,7 @@ class ExpedienteController extends Controller
         $expediente = Expediente::findOrFail($id);
         $derechoHabientes = DerechoHabiente::all();
 
-        return view('expedientes.edit', compact('expediente','derechoHabientes'));
+        return Inertia::render('Expedientes/Edit', compact('expediente','derechoHabientes'));
     }
 
 

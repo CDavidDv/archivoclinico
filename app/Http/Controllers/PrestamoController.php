@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Prestamo;
 use App\Models\Expediente;
 use App\Models\Medico;
@@ -26,7 +27,7 @@ class PrestamoController extends Controller
             ->latest('fecha_salida')
             ->get();
 
-        return view('prestamos.index', compact('prestamos'));
+        return Inertia::render('Prestamos/Index', compact('prestamos'));
     }
 
     /* =====================================================
@@ -35,7 +36,7 @@ class PrestamoController extends Controller
 
     public function create()
     {
-        return view('prestamos.create', $this->formData());
+        return Inertia::render('Prestamos/Create', $this->formData());
     }
 
     public function store(Request $request)
@@ -75,7 +76,7 @@ class PrestamoController extends Controller
             'recibidoPor'
         ]);
 
-        return view('prestamos.show', compact('prestamo'));
+        return Inertia::render('Prestamos/Show', compact('prestamo'));
     }
 
     /* =====================================================
@@ -90,7 +91,7 @@ class PrestamoController extends Controller
                 ->withErrors(['error' => 'No se puede editar un préstamo ya devuelto.']);
         }
 
-        return view('prestamos.edit', array_merge(
+        return Inertia::render('Prestamos/Edit', array_merge(
             compact('prestamo'),
             $this->formData()
         ));
@@ -145,7 +146,7 @@ class PrestamoController extends Controller
             'medico'
         ]);
 
-        return view('prestamos.devolver', [
+        return Inertia::render('Prestamos/Devolver', [
             'prestamo' => $prestamo,
             'personalArchivos' => PersonalArchivo::orderBy('nombre')->get()
         ]);

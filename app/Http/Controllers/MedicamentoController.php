@@ -6,6 +6,7 @@ use App\Models\Medicamento;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class MedicamentoController extends Controller
 {
@@ -15,12 +16,12 @@ class MedicamentoController extends Controller
             ->orderBy('clave')
             ->get();
 
-        return view('medicamentos.index', compact('medicamentos'));
+        return Inertia::render('Medicamentos/Index', compact('medicamentos'));
     }
 
     public function create()
     {
-        return view('medicamentos.create', $this->formData());
+        return Inertia::render('Medicamentos/Create', $this->formData());
     }
 
     public function store(Request $request)
@@ -39,12 +40,12 @@ class MedicamentoController extends Controller
             'producto',
         ]);
 
-        return view('medicamentos.show', compact('medicamento'));
+        return Inertia::render('Medicamentos/Show', compact('medicamento'));
     }
 
     public function edit(Medicamento $medicamento)
     {
-        return view('medicamentos.edit', array_merge(
+        return Inertia::render('Medicamentos/Edit', array_merge(
             compact('medicamento'),
             $this->formData($medicamento)
         ));

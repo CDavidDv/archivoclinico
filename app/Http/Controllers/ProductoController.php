@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class ProductoController extends Controller
 {
@@ -14,12 +15,12 @@ class ProductoController extends Controller
             ->orderBy('clave')
             ->get();
 
-        return view('productos.index', compact('productos'));
+        return Inertia::render('Productos/Index', compact('productos'));
     }
 
     public function create()
     {
-        return view('productos.create', $this->formData());
+        return Inertia::render('Productos/Create', $this->formData());
     }
 
     public function store(Request $request)
@@ -35,12 +36,12 @@ class ProductoController extends Controller
     {
         $producto->load(['lotes' => fn ($q) => $q->orderBy('caducidad'), 'medicamento']);
 
-        return view('productos.show', compact('producto'));
+        return Inertia::render('Productos/Show', compact('producto'));
     }
 
     public function edit(Producto $producto)
     {
-        return view('productos.edit', array_merge(
+        return Inertia::render('Productos/Edit', array_merge(
             compact('producto'),
             $this->formData()
         ));

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\PersonalArchivo;
 use Illuminate\Http\Request;
 
@@ -10,12 +11,12 @@ class PersonalArchivoController extends Controller
     public function index()
     {
         $personalArchivos = PersonalArchivo::all();
-        return view('personal_archivos.index', compact('personalArchivos'));
+        return Inertia::render('PersonalArchivos/Index', compact('personalArchivos'));
     }
 
     public function create()
     {
-        return view('personal_archivos.create');
+        return Inertia::render('PersonalArchivos/Create');
     }
 
     public function store(Request $request)
@@ -40,13 +41,13 @@ class PersonalArchivoController extends Controller
     public function show($id)
     {
         $personalArchivo = PersonalArchivo::findOrFail($id);
-        return view('personal_archivos.show', compact('personalArchivo'));
+        return Inertia::render('PersonalArchivos/Show', compact('personalArchivo'));
     }
 
     public function edit($id)
     {
         $personalArchivo = PersonalArchivo::findOrFail($id);
-        return view('personal_archivos.edit', compact('personalArchivo'));
+        return Inertia::render('PersonalArchivos/Edit', compact('personalArchivo'));
     }
 
     public function update(Request $request, $id)

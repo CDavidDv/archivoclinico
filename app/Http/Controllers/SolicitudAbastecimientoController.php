@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\DetalleSolicitudAbastecimiento;
 use App\Models\Producto;
 use App\Models\SolicitudAbastecimiento;
@@ -25,12 +26,12 @@ class SolicitudAbastecimientoController extends Controller
             ->latest('id')
             ->paginate(20);
 
-        return view('solicitudes.index', compact('solicitudes'));
+        return Inertia::render('Solicitudes/Index', compact('solicitudes'));
     }
 
     public function create(Request $request)
     {
-        return view('solicitudes.create', [
+        return Inertia::render('Solicitudes/Create', [
             'productos' => Producto::activos()->orderBy('clave')->get(),
             'modulo'    => $this->moduloDelUsuario($request->user()),
         ]);
@@ -82,7 +83,7 @@ class SolicitudAbastecimientoController extends Controller
             'transferencias',
         ]);
 
-        return view('solicitudes.show', compact('solicitud'));
+        return Inertia::render('Solicitudes/Show', compact('solicitud'));
     }
 
     public function aprobar(Request $request, SolicitudAbastecimiento $solicitud)
