@@ -6,6 +6,7 @@ use App\Models\LoteFarmacia;
 use App\Models\Medicamento;
 use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class AlertaTest extends TestCase
@@ -25,10 +26,10 @@ class AlertaTest extends TestCase
         $response = $this->get(route('farmacia.alertas'));
 
         $response->assertOk();
-        $response->assertViewIs('farmacia.alertas');
-        $response->assertViewHas('bajoMinimo', function ($bajoMinimo) use ($medicamento) {
-            return $bajoMinimo->contains('id', $medicamento->id);
-        });
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Farmacia/Alertas')
+            ->where('bajoMinimo', fn ($items) => collect($items)->contains('id', $medicamento->id))
+        );
     }
 
     public function test_alertas_no_muestra_medicamentos_con_stock_suficiente(): void
@@ -44,9 +45,10 @@ class AlertaTest extends TestCase
         $response = $this->get(route('farmacia.alertas'));
 
         $response->assertOk();
-        $response->assertViewHas('bajoMinimo', function ($bajoMinimo) use ($medicamento) {
-            return !$bajoMinimo->contains('id', $medicamento->id);
-        });
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Farmacia/Alertas')
+            ->where('bajoMinimo', fn ($items) => !collect($items)->contains('id', $medicamento->id))
+        );
     }
 
     public function test_alertas_muestra_lotes_por_caducar(): void
@@ -63,9 +65,10 @@ class AlertaTest extends TestCase
         $response = $this->get(route('farmacia.alertas'));
 
         $response->assertOk();
-        $response->assertViewHas('porCaducar', function ($porCaducar) use ($lotePorCaducar) {
-            return $porCaducar->contains('id', $lotePorCaducar->id);
-        });
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Farmacia/Alertas')
+            ->where('porCaducar', fn ($items) => collect($items)->contains('id', $lotePorCaducar->id))
+        );
     }
 
     public function test_alertas_muestra_lotes_caducados(): void
@@ -82,9 +85,10 @@ class AlertaTest extends TestCase
         $response = $this->get(route('farmacia.alertas'));
 
         $response->assertOk();
-        $response->assertViewHas('caducados', function ($caducados) use ($loteCaducado) {
-            return $caducados->contains('id', $loteCaducado->id);
-        });
+        $response->assertInertia(fn (Assert $page) => $page
+            ->component('Farmacia/Alertas')
+            ->where('caducados', fn ($items) => collect($items)->contains('id', $loteCaducado->id))
+        );
     }
 
     public function test_rol_no_farmacia_no_accede_alertas(): void

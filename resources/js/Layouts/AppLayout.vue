@@ -26,7 +26,7 @@ const logout = () => router.post(route('logout'));
     <div>
         <Head :title="title" />
 
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div class="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900">
             <nav class="bg-emerald-700 text-white shadow-sm">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
@@ -39,8 +39,9 @@ const logout = () => router.post(route('logout'));
                                 <!-- ARCHIVO CLÍNICO -->
                                 <Dropdown v-if="hasRole('administrador', 'archivo', 'medico')" align="left" width="56">
                                     <template #trigger>
-                                        <button class="px-3 py-2 text-sm font-medium rounded-md hover:bg-emerald-600 transition">
+                                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-emerald-600 transition">
                                             Archivo Clínico
+                                            <svg class="ms-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                                         </button>
                                     </template>
                                     <template #content>
@@ -62,8 +63,9 @@ const logout = () => router.post(route('logout'));
                                 <!-- FARMACIA -->
                                 <Dropdown v-if="hasRole('administrador', 'farmacia')" align="left" width="56">
                                     <template #trigger>
-                                        <button class="px-3 py-2 text-sm font-medium rounded-md hover:bg-emerald-600 transition">
+                                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-emerald-600 transition">
                                             Farmacia
+                                            <svg class="ms-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                                         </button>
                                     </template>
                                     <template #content>
@@ -80,8 +82,9 @@ const logout = () => router.post(route('logout'));
                                 <!-- ALMACÉN -->
                                 <Dropdown v-if="hasRole('administrador', 'almacen')" align="left" width="56">
                                     <template #trigger>
-                                        <button class="px-3 py-2 text-sm font-medium rounded-md hover:bg-emerald-600 transition">
+                                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-emerald-600 transition">
                                             Almacén
+                                            <svg class="ms-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                                         </button>
                                     </template>
                                     <template #content>
@@ -108,8 +111,9 @@ const logout = () => router.post(route('logout'));
                                 <!-- ADMINISTRACIÓN -->
                                 <Dropdown v-if="hasRole('administrador')" align="left" width="56">
                                     <template #trigger>
-                                        <button class="px-3 py-2 text-sm font-medium rounded-md hover:bg-emerald-600 transition">
+                                        <button class="inline-flex items-center px-3 py-2 text-sm font-medium rounded-md hover:bg-emerald-600 transition">
                                             Administración
+                                            <svg class="ms-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                                         </button>
                                     </template>
                                     <template #content>
@@ -217,7 +221,7 @@ const logout = () => router.post(route('logout'));
                 </div>
             </header>
 
-            <main class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+            <main class="flex-1 w-full max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                 <FlashMessages />
                 <slot />
             </main>

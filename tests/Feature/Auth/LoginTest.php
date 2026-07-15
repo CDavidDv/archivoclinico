@@ -4,6 +4,7 @@ namespace Tests\Feature\Auth;
 
 use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -15,7 +16,7 @@ class LoginTest extends TestCase
         $response = $this->get(route('login'));
 
         $response->assertStatus(200);
-        $response->assertViewIs('auth.login');
+        $response->assertInertia(fn (Assert $page) => $page->component('Auth/Login'));
     }
 
     public function test_user_can_login_with_valid_credentials(): void
@@ -52,7 +53,7 @@ class LoginTest extends TestCase
 
         $response = $this->actingAs($usuario)->post(route('logout'));
 
-        $response->assertRedirect(route('login'));
+        $response->assertRedirect('/');
         $this->assertGuest();
     }
 
