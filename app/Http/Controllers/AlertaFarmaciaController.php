@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\LoteFarmacia;
 use App\Models\Medicamento;
 
@@ -25,6 +26,6 @@ class AlertaFarmaciaController extends Controller
             ->orderBy('caducidad')
             ->get();
 
-        return view('farmacia.alertas', compact('bajoMinimo', 'porCaducar', 'caducados'));
+        return Inertia::render('Farmacia/Alertas', compact('bajoMinimo', 'porCaducar', 'caducados'));
     }
 }

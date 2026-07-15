@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\EntradaFarmacia;
 use App\Models\Medicamento;
 use App\Services\InventarioFarmaciaService;
@@ -21,12 +22,12 @@ class EntradaFarmaciaController extends Controller
             ->latest('id')
             ->paginate(20);
 
-        return view('entradas_farmacia.index', compact('entradas'));
+        return Inertia::render('EntradasFarmacia/Index', compact('entradas'));
     }
 
     public function create()
     {
-        return view('entradas_farmacia.create', [
+        return Inertia::render('EntradasFarmacia/Create', [
             'medicamentos' => Medicamento::activos()->orderBy('clave')->get(),
         ]);
     }
@@ -58,6 +59,6 @@ class EntradaFarmaciaController extends Controller
     {
         $entradas_farmacium->load(['usuario', 'transferencia', 'detalles.medicamento', 'detalles.lote']);
 
-        return view('entradas_farmacia.show', ['entrada' => $entradas_farmacium]);
+        return Inertia::render('EntradasFarmacia/Show', ['entrada' => $entradas_farmacium]);
     }
 }

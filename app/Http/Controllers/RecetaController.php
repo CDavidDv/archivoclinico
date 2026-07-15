@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\DerechoHabiente;
 use App\Models\DetalleReceta;
 use App\Models\Medicamento;
@@ -29,12 +30,12 @@ class RecetaController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('recetas.index', compact('recetas', 'estatus'));
+        return Inertia::render('Recetas/Index', compact('recetas', 'estatus'));
     }
 
     public function create()
     {
-        return view('recetas.create', $this->formData());
+        return Inertia::render('Recetas/Create', $this->formData());
     }
 
     public function store(Request $request)
@@ -93,7 +94,7 @@ class RecetaController extends Controller
             'dispensaciones.usuario',
         ]);
 
-        return view('recetas.show', compact('receta'));
+        return Inertia::render('Recetas/Show', compact('receta'));
     }
 
     public function cancelar(Receta $receta)

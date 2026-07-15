@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Dispensacion;
 use App\Models\LoteFarmacia;
 use App\Models\Receta;
@@ -20,7 +21,7 @@ class DispensacionController extends Controller
             ->latest('fecha')
             ->paginate(20);
 
-        return view('dispensaciones.index', compact('dispensaciones'));
+        return Inertia::render('Dispensaciones/Index', compact('dispensaciones'));
     }
 
     public function create(Receta $receta)
@@ -40,7 +41,7 @@ class DispensacionController extends Controller
                     ->sum('cantidad_actual'),
             ]);
 
-        return view('dispensaciones.create', compact('receta', 'stockDisponible'));
+        return Inertia::render('Dispensaciones/Create', compact('receta', 'stockDisponible'));
     }
 
     public function store(Request $request, Receta $receta)
@@ -72,6 +73,6 @@ class DispensacionController extends Controller
             'detalles.lote',
         ]);
 
-        return view('dispensaciones.show', compact('dispensacion'));
+        return Inertia::render('Dispensaciones/Show', compact('dispensacion'));
     }
 }

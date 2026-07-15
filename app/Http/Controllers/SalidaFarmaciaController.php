@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\LoteFarmacia;
 use App\Models\SalidaFarmacia;
 use App\Services\InventarioFarmaciaService;
@@ -22,7 +23,7 @@ class SalidaFarmaciaController extends Controller
             ->latest('id')
             ->paginate(20);
 
-        return view('salidas_farmacia.index', compact('salidas'));
+        return Inertia::render('SalidasFarmacia/Index', compact('salidas'));
     }
 
     public function create()
@@ -32,7 +33,7 @@ class SalidaFarmaciaController extends Controller
             ->orderBy('caducidad')
             ->get();
 
-        return view('salidas_farmacia.create', [
+        return Inertia::render('SalidasFarmacia/Create', [
             'lotes' => $lotes,
             'tipos' => SalidaFarmacia::TIPOS,
         ]);
@@ -64,6 +65,6 @@ class SalidaFarmaciaController extends Controller
     {
         $salidas_farmacium->load(['usuario', 'detalles.medicamento', 'detalles.lote']);
 
-        return view('salidas_farmacia.show', ['salida' => $salidas_farmacium]);
+        return Inertia::render('SalidasFarmacia/Show', ['salida' => $salidas_farmacium]);
     }
 }
