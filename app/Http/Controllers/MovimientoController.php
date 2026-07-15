@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Movimiento;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
@@ -33,6 +34,6 @@ class MovimientoController extends Controller
         $movimientos = $query->paginate(15);
         $usuarios = Usuario::orderBy('nombre_usuario')->get();
 
-        return view('movimientos.index', compact('movimientos','usuarios'));
+        return Inertia::render('Movimientos/Index', compact('movimientos','usuarios'));
     }
 }

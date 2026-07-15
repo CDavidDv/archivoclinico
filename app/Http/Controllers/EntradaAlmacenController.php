@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\EntradaAlmacen;
 use App\Models\Producto;
 use App\Models\Proveedor;
@@ -23,12 +24,12 @@ class EntradaAlmacenController extends Controller
             ->latest('id')
             ->paginate(20);
 
-        return view('entradas_almacen.index', compact('entradas'));
+        return Inertia::render('EntradasAlmacen/Index', compact('entradas'));
     }
 
     public function create()
     {
-        return view('entradas_almacen.create', $this->formData());
+        return Inertia::render('EntradasAlmacen/Create', $this->formData());
     }
 
     public function store(Request $request)
@@ -50,7 +51,7 @@ class EntradaAlmacenController extends Controller
     {
         $entradas_almacen->load(['proveedor', 'usuario', 'detalles.producto', 'detalles.lote']);
 
-        return view('entradas_almacen.show', ['entrada' => $entradas_almacen]);
+        return Inertia::render('EntradasAlmacen/Show', ['entrada' => $entradas_almacen]);
     }
 
     private function validateData(Request $request): array

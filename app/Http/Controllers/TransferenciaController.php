@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Producto;
 use App\Models\SolicitudAbastecimiento;
 use App\Models\Transferencia;
@@ -23,7 +24,7 @@ class TransferenciaController extends Controller
             ->latest('id')
             ->paginate(20);
 
-        return view('transferencias.index', compact('transferencias'));
+        return Inertia::render('Transferencias/Index', compact('transferencias'));
     }
 
     public function create(Request $request)
@@ -41,7 +42,7 @@ class TransferenciaController extends Controller
             }
         }
 
-        return view('transferencias.create', [
+        return Inertia::render('Transferencias/Create', [
             'productos' => Producto::activos()
                 ->conStockTotal()
                 ->orderBy('clave')
@@ -84,6 +85,6 @@ class TransferenciaController extends Controller
             'entradaFarmacia',
         ]);
 
-        return view('transferencias.show', compact('transferencia'));
+        return Inertia::render('Transferencias/Show', compact('transferencia'));
     }
 }

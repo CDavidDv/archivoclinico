@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -16,7 +17,7 @@ class UsuarioController extends Controller
     {
         $usuarios = Usuario::orderBy('nombre_usuario')->get();
 
-        return view('usuarios.index', compact('usuarios'));
+        return Inertia::render('Usuarios/Index', compact('usuarios'));
     }
 
     /* =====================================================
@@ -25,14 +26,15 @@ class UsuarioController extends Controller
 
     public function create()
     {
-        return view('usuarios.create', $this->formData());
+        return Inertia::render('Usuarios/Create', $this->formData());
     }
 
     public function store(Request $request)
     {
         $validated = $this->validateData($request);
 
-        Usuario::create($validated);
+        $usuario = Usuario::create($validated);
+        $usuario->syncRoles([$validated['rol']]);
 
         return redirect()
             ->route('usuarios.index')
@@ -45,7 +47,7 @@ class UsuarioController extends Controller
 
     public function show(Usuario $usuario)
     {
-        return view('usuarios.show', compact('usuario'));
+        return Inertia::render('Usuarios/Show', compact('usuario'));
     }
 
     /* =====================================================
@@ -54,7 +56,7 @@ class UsuarioController extends Controller
 
     public function edit(Usuario $usuario)
     {
-        return view('usuarios.edit', array_merge(
+        return Inertia::render('Usuarios/Edit', array_merge(
             compact('usuario'),
             $this->formData()
         ));
@@ -69,6 +71,7 @@ class UsuarioController extends Controller
         }
 
         $usuario->update($validated);
+        $usuario->syncRoles([$validated['rol']]);
 
         return redirect()
             ->route('usuarios.index')

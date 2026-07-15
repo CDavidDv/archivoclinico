@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Producto;
 use App\Models\SalidaAlmacen;
 use App\Services\InventarioAlmacenService;
@@ -22,12 +23,12 @@ class SalidaAlmacenController extends Controller
             ->latest('id')
             ->paginate(20);
 
-        return view('salidas_almacen.index', compact('salidas'));
+        return Inertia::render('SalidasAlmacen/Index', compact('salidas'));
     }
 
     public function create()
     {
-        return view('salidas_almacen.create', $this->formData());
+        return Inertia::render('SalidasAlmacen/Create', $this->formData());
     }
 
     public function store(Request $request)
@@ -49,7 +50,7 @@ class SalidaAlmacenController extends Controller
     {
         $salidas_almacen->load(['usuario', 'detalles.producto', 'detalles.lote']);
 
-        return view('salidas_almacen.show', ['salida' => $salidas_almacen]);
+        return Inertia::render('SalidasAlmacen/Show', ['salida' => $salidas_almacen]);
     }
 
     private function validateData(Request $request): array

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Producto;
 use Illuminate\Http\Request;
 
@@ -16,7 +17,7 @@ class ReporteAlmacenController extends Controller
             ->orderBy('clave')
             ->get();
 
-        return view('almacen.existencias', [
+        return Inertia::render('Almacen/Existencias', [
             'productos'  => $productos,
             'categoria'  => $categoria,
             'categorias' => Producto::CATEGORIAS,
