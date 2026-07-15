@@ -21,7 +21,8 @@ class VerificarRol
             return redirect()->route('login');
         }
 
-        if (!$usuario->hasRol(Usuario::ROL_ADMINISTRADOR, ...$roles)) {
+        // Permisos vía Spatie: el administrador siempre tiene acceso.
+        if (!$usuario->hasRole(Usuario::ROL_ADMINISTRADOR) && !$usuario->hasAnyRole($roles)) {
             abort(403, 'No tienes permiso para acceder a esta sección.');
         }
 

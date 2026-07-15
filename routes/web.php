@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
+use Inertia\Inertia;
 use App\Http\Controllers\AlertaFarmaciaController;
 use App\Http\Controllers\DerechoHabienteController;
 use App\Http\Controllers\DispensacionController;
@@ -28,13 +28,9 @@ use App\Http\Controllers\UsuarioController;
 |--------------------------------------------------------------------------
 | AUTENTICACIÓN
 |--------------------------------------------------------------------------
+| Login/logout/reset gestionado por Fortify (Jetstream). El campo de
+| usuario es `nombre_usuario` (ver config/fortify.php).
 */
-
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.store');
-Route::post('/logout', [LoginController::class, 'logout'])
-    ->middleware('auth')
-    ->name('logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -42,11 +38,11 @@ Route::post('/logout', [LoginController::class, 'logout'])
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(function () {
 
     Route::redirect('/', '/dashboard');
 
-    Route::view('/dashboard', 'dashboard')->name('dashboard');
+    Route::get('/dashboard', fn () => Inertia::render('Dashboard'))->name('dashboard');
 
     /*
     |----------------------------------------------------------------------
