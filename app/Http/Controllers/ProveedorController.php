@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Proveedor;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class ProveedorController extends Controller
 {
@@ -12,12 +13,12 @@ class ProveedorController extends Controller
     {
         $proveedores = Proveedor::orderBy('nombre')->get();
 
-        return view('proveedores.index', compact('proveedores'));
+        return Inertia::render('Proveedores/Index', compact('proveedores'));
     }
 
     public function create()
     {
-        return view('proveedores.create');
+        return Inertia::render('Proveedores/Create');
     }
 
     public function store(Request $request)
@@ -33,12 +34,12 @@ class ProveedorController extends Controller
     {
         $proveedore->load('entradas');
 
-        return view('proveedores.show', ['proveedor' => $proveedore]);
+        return Inertia::render('Proveedores/Show', ['proveedor' => $proveedore]);
     }
 
     public function edit(Proveedor $proveedore)
     {
-        return view('proveedores.edit', ['proveedor' => $proveedore]);
+        return Inertia::render('Proveedores/Edit', ['proveedor' => $proveedore]);
     }
 
     public function update(Request $request, Proveedor $proveedore)
