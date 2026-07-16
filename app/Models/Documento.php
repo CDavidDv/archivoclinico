@@ -21,6 +21,7 @@ class Documento extends Model
         'tamano',
         'hash',
         'fecha_anexo',
+        'subido_por',
     ];
 
     protected $casts = [
@@ -36,6 +37,11 @@ class Documento extends Model
     public function expediente()
     {
         return $this->belongsTo(Expediente::class, 'id_expediente');
+    }
+
+    public function cargadoPor()
+    {
+        return $this->belongsTo(Usuario::class, 'subido_por');
     }
 
     public function getDerechoHabienteAttribute()

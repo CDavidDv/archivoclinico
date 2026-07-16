@@ -85,8 +85,11 @@ class MedicamentoController extends Controller
             'nombre'           => 'required|string|max:255',
             'sustancia_activa' => 'required|string|max:255',
             'presentacion'     => 'required|string|max:100',
+            'piezas_por_presentacion' => 'required|integer|min:1',
             'unidad_medida'    => 'required|string|max:30',
             'stock_minimo'     => 'required|integer|min:0',
+            'controlado'       => 'boolean',
+            'dias_restriccion' => 'required|integer|min:1',
             'id_producto'      => [
                 'nullable', 'exists:productos,id',
                 Rule::unique('medicamentos', 'id_producto')->ignore($medicamento?->id),

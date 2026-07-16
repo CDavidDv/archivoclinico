@@ -8,6 +8,11 @@ defineProps({ dispensacion: Object });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
 const nom = (p) => (p ? `${p.nombre} ${p.apellido_paterno}` : '—');
+const tipoLegible = (t) => ({
+    exceso_cantidad: 'Exceso de cantidad prescrita',
+    presentacion_comercial: 'Surtido por presentación comercial',
+    controlado_anticipado: 'Surtido anticipado de controlado',
+}[t] || t);
 </script>
 
 <template>
@@ -44,6 +49,35 @@ const nom = (p) => (p ? `${p.nombre} ${p.apellido_paterno}` : '—');
                             <td class="px-3 py-2">{{ d.detalle_receta && d.detalle_receta.medicamento ? d.detalle_receta.medicamento.nombre : '—' }}</td>
                             <td class="px-3 py-2">{{ d.lote ? d.lote.numero_lote : '—' }}</td>
                             <td class="px-3 py-2">{{ d.cantidad }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </Card>
+
+        <Card v-if="dispensacion.autorizaciones && dispensacion.autorizaciones.length" title="Autorizaciones de excepción" class="mt-6">
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                    <thead>
+                        <tr class="text-left text-gray-500">
+                            <th class="px-3 py-2 font-medium">Tipo</th>
+                            <th class="px-3 py-2 font-medium">Medicamento</th>
+                            <th class="px-3 py-2 font-medium">Prescrito</th>
+                            <th class="px-3 py-2 font-medium">Autorizado</th>
+                            <th class="px-3 py-2 font-medium">Autorizó</th>
+                            <th class="px-3 py-2 font-medium">Motivo</th>
+                            <th class="px-3 py-2 font-medium">Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        <tr v-for="a in dispensacion.autorizaciones" :key="a.id">
+                            <td class="px-3 py-2">{{ tipoLegible(a.tipo) }}</td>
+                            <td class="px-3 py-2">{{ a.medicamento ? a.medicamento.nombre : '—' }}</td>
+                            <td class="px-3 py-2">{{ a.cantidad_prescrita }}</td>
+                            <td class="px-3 py-2 font-semibold text-amber-700">{{ a.cantidad_autorizada }}</td>
+                            <td class="px-3 py-2">{{ a.autorizador ? a.autorizador.nombre_usuario : '—' }}</td>
+                            <td class="px-3 py-2">{{ a.motivo }}</td>
+                            <td class="px-3 py-2">{{ fecha(a.fecha_accion) }}</td>
                         </tr>
                     </tbody>
                 </table>

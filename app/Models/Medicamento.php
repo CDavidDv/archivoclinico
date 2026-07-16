@@ -18,14 +18,20 @@ class Medicamento extends Model
         'nombre',
         'sustancia_activa',
         'presentacion',
+        'piezas_por_presentacion',
         'unidad_medida',
         'stock_minimo',
+        'controlado',
+        'dias_restriccion',
         'id_producto',
         'activo',
     ];
 
     protected $casts = [
-        'activo' => 'boolean',
+        'activo'                  => 'boolean',
+        'controlado'              => 'boolean',
+        'piezas_por_presentacion' => 'integer',
+        'dias_restriccion'        => 'integer',
     ];
 
     /* =====================================================
@@ -60,5 +66,29 @@ class Medicamento extends Model
     public function scopeActivos(Builder $query): Builder
     {
         return $query->where('activo', true);
+    }
+
+    /* =====================================================
+       PRESENTACIÓN COMERCIAL
+    ===================================================== */
+
+    /** El medicamento sólo se entrega en cajas completas. */
+    public function entregaPorCajas(): bool
+    {
+        return (int) $this->piezas_por_presentacion > 1;
+    }
+
+    /** Cajas completas necesarias para cubrir una cantidad de piezas. */
+    public function cajasNecesarias(int $piezas): int
+    {
+        $ppp = max(1, (int) $this->piezas_por_presentacion);
+        return (int) ceil($piezas / $ppp);
+    }
+
+    /** Piezas reales que se entregan al surtir en cajas completas. */
+    public function piezasEnCajas(int $piezas): int
+    {
+        $ppp = max(1, (int) $this->piezas_por_presentacion);
+        return $this->cajasNecesarias($piezas) * $ppp;
     }
 }

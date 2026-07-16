@@ -52,6 +52,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session')])->group(fun
     |----------------------------------------------------------------------
     */
     Route::middleware('role:archivo')->group(function () {
+        // Carga múltiple de documentos (antes del resource para no chocar con {documento}).
+        Route::get('documentos/bulk', [DocumentoController::class, 'bulkCreate'])
+            ->name('documentos.bulk.create');
+        Route::post('documentos/bulk', [DocumentoController::class, 'storeBulk'])
+            ->name('documentos.bulk');
+
         Route::resources([
             'derecho_habientes' => DerechoHabienteController::class,
             'expedientes'       => ExpedienteController::class,

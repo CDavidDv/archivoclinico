@@ -10,7 +10,8 @@ defineProps({ productos: Array });
 
 const form = useForm({
     clave: '', nombre: '', sustancia_activa: '', presentacion: '',
-    unidad_medida: 'pieza', stock_minimo: 0, id_producto: '', activo: true,
+    piezas_por_presentacion: 1, unidad_medida: 'pieza', stock_minimo: 0,
+    controlado: false, dias_restriccion: 28, id_producto: '', activo: true,
 });
 const submit = () => form.post(route('medicamentos.store'));
 </script>

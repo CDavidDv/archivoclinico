@@ -24,11 +24,22 @@ const productoOptions = computed(() =>
             <TextField v-model="form.sustancia_activa" label="Sustancia activa" :error="form.errors.sustancia_activa" required />
         </div>
         <TextField v-model="form.presentacion" label="Presentación" placeholder="Tabletas 500 mg, caja c/20" :error="form.errors.presentacion" required maxlength="100" />
+        <div>
+            <TextField v-model="form.piezas_por_presentacion" label="Piezas por presentación" type="number" min="1" :error="form.errors.piezas_por_presentacion" required />
+            <p class="mt-1 text-xs text-gray-500">Piezas por caja/frasco. Use 1 si se surte por unidad.</p>
+        </div>
         <TextField v-model="form.unidad_medida" label="Unidad de medida" :error="form.errors.unidad_medida" required maxlength="30" />
         <TextField v-model="form.stock_minimo" label="Stock mínimo" type="number" min="0" :error="form.errors.stock_minimo" required />
         <div>
             <SelectField v-model="form.id_producto" label="Producto de almacén vinculado" :options="productoOptions" placeholder="Sin vínculo" :error="form.errors.id_producto" />
             <p class="mt-1 text-xs text-gray-500">Necesario para recibir transferencias del almacén.</p>
+        </div>
+        <div class="flex items-end">
+            <CheckboxField v-model="form.controlado" label="Medicamento controlado" />
+        </div>
+        <div>
+            <TextField v-model="form.dias_restriccion" label="Días entre surtidos" type="number" min="1" :error="form.errors.dias_restriccion" :disabled="!form.controlado" required />
+            <p class="mt-1 text-xs text-gray-500">Sólo aplica a controlados (predet. 28).</p>
         </div>
         <div class="flex items-end">
             <CheckboxField v-model="form.activo" label="Activo" />

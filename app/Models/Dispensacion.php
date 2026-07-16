@@ -37,4 +37,9 @@ class Dispensacion extends Model
     {
         return $this->hasMany(DetalleDispensacion::class, 'id_dispensacion');
     }
+
+    public function autorizaciones()
+    {
+        return $this->hasMany(Autorizacion::class, 'id_dispensacion');
+    }
 }

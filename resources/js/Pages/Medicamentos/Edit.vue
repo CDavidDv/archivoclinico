@@ -13,8 +13,11 @@ const form = useForm({
     nombre: props.medicamento.nombre ?? '',
     sustancia_activa: props.medicamento.sustancia_activa ?? '',
     presentacion: props.medicamento.presentacion ?? '',
+    piezas_por_presentacion: props.medicamento.piezas_por_presentacion ?? 1,
     unidad_medida: props.medicamento.unidad_medida ?? 'pieza',
     stock_minimo: props.medicamento.stock_minimo ?? 0,
+    controlado: Boolean(props.medicamento.controlado),
+    dias_restriccion: props.medicamento.dias_restriccion ?? 28,
     id_producto: props.medicamento.id_producto ?? '',
     activo: Boolean(props.medicamento.activo),
 });
