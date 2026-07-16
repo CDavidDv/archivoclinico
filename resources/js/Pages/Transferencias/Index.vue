@@ -3,11 +3,19 @@ import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
-import Pagination from '@/Components/Pagination.vue';
+import DataTable from '@/Components/DataTable.vue';
 
-defineProps({ transferencias: Object });
+defineProps({ transferencias: Object, filtros: { type: Object, default: () => ({}) } });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
+const columns = [
+    { key: 'folio', label: 'Folio', filter: 'text' },
+    { key: 'fecha', label: 'Fecha', filter: 'date' },
+    { key: 'destino', label: 'Destino', filter: 'text' },
+    { key: 'solicitud', label: 'Solicitud', filter: 'text' },
+    { key: 'usuario', label: 'Usuario', filter: 'text' },
+    { key: 'detalles_count', label: 'Ítems', filter: false },
+];
 </script>
 
 <template>
@@ -19,36 +27,16 @@ const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
         </PageHeader>
 
         <Card title="Historial de Transferencias">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                    <thead>
-                        <tr class="text-left text-gray-500">
-                            <th class="px-3 py-2 font-medium">Folio</th>
-                            <th class="px-3 py-2 font-medium">Fecha</th>
-                            <th class="px-3 py-2 font-medium">Destino</th>
-                            <th class="px-3 py-2 font-medium">Solicitud</th>
-                            <th class="px-3 py-2 font-medium">Usuario</th>
-                            <th class="px-3 py-2 font-medium">Ítems</th>
-                            <th class="px-3 py-2 font-medium text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                        <tr v-for="t in transferencias.data" :key="t.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/40">
-                            <td class="px-3 py-2 font-semibold">{{ t.folio }}</td>
-                            <td class="px-3 py-2">{{ fecha(t.fecha) }}</td>
-                            <td class="px-3 py-2 capitalize">{{ t.destino }}{{ t.area_destino ? ` — ${t.area_destino}` : '' }}</td>
-                            <td class="px-3 py-2">{{ t.solicitud ? t.solicitud.folio : '—' }}</td>
-                            <td class="px-3 py-2">{{ t.usuario ? t.usuario.nombre_usuario : '—' }}</td>
-                            <td class="px-3 py-2">{{ t.detalles_count }}</td>
-                            <td class="px-3 py-2 text-right">
-                                <Link :href="route('transferencias.show', t.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
-                            </td>
-                        </tr>
-                        <tr v-if="transferencias.data.length === 0"><td colspan="7" class="px-3 py-6 text-center text-gray-400">No hay transferencias.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <Pagination :links="transferencias.links" />
+            <DataTable :columns="columns" :paginator="transferencias" route-name="transferencias.index" :filters="filtros" has-actions empty="No hay transferencias.">
+                <template #col-folio="{ row }"><span class="font-semibold">{{ row.folio }}</span></template>
+                <template #col-fecha="{ row }">{{ fecha(row.fecha) }}</template>
+                <template #col-destino="{ row }"><span class="capitalize">{{ row.destino }}{{ row.area_destino ? ` — ${row.area_destino}` : '' }}</span></template>
+                <template #col-solicitud="{ row }">{{ row.solicitud ? row.solicitud.folio : '—' }}</template>
+                <template #col-usuario="{ row }">{{ row.usuario ? row.usuario.nombre_usuario : '—' }}</template>
+                <template #actions="{ row }">
+                    <Link :href="route('transferencias.show', row.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
+                </template>
+            </DataTable>
         </Card>
     </AppLayout>
 </template>

@@ -3,9 +3,9 @@ import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
-import Pagination from '@/Components/Pagination.vue';
+import DataTable from '@/Components/DataTable.vue';
 
-defineProps({ solicitudes: Object });
+defineProps({ solicitudes: Object, filtros: { type: Object, default: () => ({}) } });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
 const badge = (e) => ({
@@ -14,6 +14,15 @@ const badge = (e) => ({
     surtida: 'bg-emerald-100 text-emerald-800',
     rechazada: 'bg-red-100 text-red-700',
 }[e] || 'bg-gray-100 text-gray-700');
+
+const columns = [
+    { key: 'folio', label: 'Folio', filter: 'text' },
+    { key: 'modulo_solicitante', label: 'Módulo', filter: 'text' },
+    { key: 'solicita', label: 'Solicita', filter: 'text' },
+    { key: 'fecha_solicitud', label: 'Fecha', filter: 'date' },
+    { key: 'detalles_count', label: 'Ítems', filter: false },
+    { key: 'estatus', label: 'Estatus', filter: 'select', options: ['pendiente', 'aprobada', 'surtida', 'rechazada'].map((e) => ({ value: e, label: e })) },
+];
 </script>
 
 <template>
@@ -25,38 +34,16 @@ const badge = (e) => ({
         </PageHeader>
 
         <Card title="Listado de Solicitudes">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                    <thead>
-                        <tr class="text-left text-gray-500">
-                            <th class="px-3 py-2 font-medium">Folio</th>
-                            <th class="px-3 py-2 font-medium">Módulo</th>
-                            <th class="px-3 py-2 font-medium">Solicita</th>
-                            <th class="px-3 py-2 font-medium">Fecha</th>
-                            <th class="px-3 py-2 font-medium">Ítems</th>
-                            <th class="px-3 py-2 font-medium">Estatus</th>
-                            <th class="px-3 py-2 font-medium text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                        <tr v-for="s in solicitudes.data" :key="s.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/40">
-                            <td class="px-3 py-2 font-semibold">{{ s.folio }}</td>
-                            <td class="px-3 py-2 capitalize">{{ s.modulo_solicitante }}</td>
-                            <td class="px-3 py-2">{{ s.usuario_solicita ? s.usuario_solicita.nombre_usuario : '—' }}</td>
-                            <td class="px-3 py-2">{{ fecha(s.fecha_solicitud) }}</td>
-                            <td class="px-3 py-2">{{ s.detalles_count }}</td>
-                            <td class="px-3 py-2">
-                                <span :class="badge(s.estatus)" class="rounded-full px-2 py-0.5 text-xs font-medium capitalize">{{ s.estatus }}</span>
-                            </td>
-                            <td class="px-3 py-2 text-right">
-                                <Link :href="route('solicitudes.show', s.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
-                            </td>
-                        </tr>
-                        <tr v-if="solicitudes.data.length === 0"><td colspan="7" class="px-3 py-6 text-center text-gray-400">No hay solicitudes.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <Pagination :links="solicitudes.links" />
+            <DataTable :columns="columns" :paginator="solicitudes" route-name="solicitudes.index" :filters="filtros" has-actions empty="No hay solicitudes.">
+                <template #col-folio="{ row }"><span class="font-semibold">{{ row.folio }}</span></template>
+                <template #col-modulo_solicitante="{ row }"><span class="capitalize">{{ row.modulo_solicitante }}</span></template>
+                <template #col-solicita="{ row }">{{ row.usuario_solicita ? row.usuario_solicita.nombre_usuario : '—' }}</template>
+                <template #col-fecha_solicitud="{ row }">{{ fecha(row.fecha_solicitud) }}</template>
+                <template #col-estatus="{ row }"><span :class="badge(row.estatus)" class="rounded-full px-2 py-0.5 text-xs font-medium capitalize">{{ row.estatus }}</span></template>
+                <template #actions="{ row }">
+                    <Link :href="route('solicitudes.show', row.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
+                </template>
+            </DataTable>
         </Card>
     </AppLayout>
 </template>

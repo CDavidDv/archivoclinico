@@ -3,17 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Proveedor;
+use App\Http\Concerns\FiltraConsulta;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ProveedorController extends Controller
 {
-    public function index()
-    {
-        $proveedores = Proveedor::orderBy('nombre')->get();
+    use FiltraConsulta;
 
-        return Inertia::render('Proveedores/Index', compact('proveedores'));
+    public function index(Request $request)
+    {
+        $query = Proveedor::query()->orderBy('nombre');
+
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'nombre'   => 'like',
+            'rfc'      => 'like',
+            'telefono' => 'like',
+            'email'    => 'like',
+            'activo'   => 'exact',
+        ]);
+
+        $proveedores = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Proveedores/Index', compact('proveedores', 'filtros'));
     }
 
     public function create()

@@ -1,12 +1,12 @@
 <script setup>
 import { computed } from 'vue';
-import { Link, router, usePage } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
-import Pagination from '@/Components/Pagination.vue';
+import DataTable from '@/Components/DataTable.vue';
 
-const props = defineProps({ recetas: Object, estatus: String });
+defineProps({ recetas: Object, filtros: { type: Object, default: () => ({}) } });
 
 const page = usePage();
 const roles = computed(() => page.props.auth?.user?.roles ?? []);
@@ -19,9 +19,16 @@ const badge = (e) => ({
     surtida: 'bg-emerald-100 text-emerald-800',
     cancelada: 'bg-red-100 text-red-700',
 }[e] || 'bg-gray-100 text-gray-700');
-
-const filtrar = (e) => router.get(route('recetas.index'), e ? { estatus: e } : {}, { preserveState: true });
 const nom = (p) => (p ? `${p.nombre} ${p.apellido_paterno}` : '—');
+
+const columns = [
+    { key: 'folio', label: 'Folio', filter: 'text' },
+    { key: 'derechohabiente', label: 'Derechohabiente', filter: 'text' },
+    { key: 'medico', label: 'Médico', filter: 'text' },
+    { key: 'fecha_receta', label: 'Fecha', filter: 'date' },
+    { key: 'detalles_count', label: 'Ítems', filter: false },
+    { key: 'estatus', label: 'Estatus', filter: 'select', options: ['pendiente', 'parcial', 'surtida', 'cancelada'].map((e) => ({ value: e, label: e })) },
+];
 </script>
 
 <template>
@@ -32,42 +39,17 @@ const nom = (p) => (p ? `${p.nombre} ${p.apellido_paterno}` : '—');
             </template>
         </PageHeader>
 
-        <div class="mb-4 flex flex-wrap gap-1">
-            <button @click="filtrar('')" :class="!estatus ? 'bg-emerald-600 text-white' : 'border border-gray-300 text-gray-700'" class="rounded px-3 py-1 text-sm">Todas</button>
-            <button v-for="e in ['pendiente','parcial','surtida','cancelada']" :key="e" @click="filtrar(e)" :class="estatus === e ? 'bg-emerald-600 text-white' : 'border border-gray-300 text-gray-700'" class="rounded px-3 py-1 text-sm capitalize">{{ e }}</button>
-        </div>
-
         <Card title="Cola de Recetas">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                    <thead>
-                        <tr class="text-left text-gray-500">
-                            <th class="px-3 py-2 font-medium">Folio</th>
-                            <th class="px-3 py-2 font-medium">Derechohabiente</th>
-                            <th class="px-3 py-2 font-medium">Médico</th>
-                            <th class="px-3 py-2 font-medium">Fecha</th>
-                            <th class="px-3 py-2 font-medium">Ítems</th>
-                            <th class="px-3 py-2 font-medium">Estatus</th>
-                            <th class="px-3 py-2 font-medium text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                        <tr v-for="r in recetas.data" :key="r.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/40">
-                            <td class="px-3 py-2 font-semibold">{{ r.folio }}</td>
-                            <td class="px-3 py-2">{{ nom(r.derecho_habiente) }}</td>
-                            <td class="px-3 py-2">{{ nom(r.medico) }}</td>
-                            <td class="px-3 py-2">{{ fecha(r.fecha_receta) }}</td>
-                            <td class="px-3 py-2">{{ r.detalles_count }}</td>
-                            <td class="px-3 py-2"><span :class="badge(r.estatus)" class="rounded-full px-2 py-0.5 text-xs font-medium capitalize">{{ r.estatus }}</span></td>
-                            <td class="px-3 py-2 text-right">
-                                <Link :href="route('recetas.show', r.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
-                            </td>
-                        </tr>
-                        <tr v-if="recetas.data.length === 0"><td colspan="7" class="px-3 py-6 text-center text-gray-400">No hay recetas.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <Pagination :links="recetas.links" />
+            <DataTable :columns="columns" :paginator="recetas" route-name="recetas.index" :filters="filtros" has-actions empty="No hay recetas.">
+                <template #col-folio="{ row }"><span class="font-semibold">{{ row.folio }}</span></template>
+                <template #col-derechohabiente="{ row }">{{ nom(row.derecho_habiente) }}</template>
+                <template #col-medico="{ row }">{{ nom(row.medico) }}</template>
+                <template #col-fecha_receta="{ row }">{{ fecha(row.fecha_receta) }}</template>
+                <template #col-estatus="{ row }"><span :class="badge(row.estatus)" class="rounded-full px-2 py-0.5 text-xs font-medium capitalize">{{ row.estatus }}</span></template>
+                <template #actions="{ row }">
+                    <Link :href="route('recetas.show', row.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
+                </template>
+            </DataTable>
         </Card>
     </AppLayout>
 </template>

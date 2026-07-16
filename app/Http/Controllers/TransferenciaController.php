@@ -16,15 +16,28 @@ class TransferenciaController extends Controller
         private readonly TransferenciaService $servicio
     ) {}
 
-    public function index()
+    use \App\Http\Concerns\FiltraConsulta;
+
+    public function index(Request $request)
     {
-        $transferencias = Transferencia::with(['usuario', 'solicitud'])
+        $query = Transferencia::with(['usuario', 'solicitud'])
             ->withCount('detalles')
             ->latest('fecha')
-            ->latest('id')
-            ->paginate(20);
+            ->latest('id');
 
-        return Inertia::render('Transferencias/Index', compact('transferencias'));
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'folio'     => 'like',
+            'fecha'     => 'date',
+            'destino'   => fn ($q, $v) => $q->where(fn ($s) => $s
+                ->where('destino', 'like', "%{$v}%")
+                ->orWhere('area_destino', 'like', "%{$v}%")),
+            'solicitud' => fn ($q, $v) => $q->whereHas('solicitud', fn ($s) => $s->where('folio', 'like', "%{$v}%")),
+            'usuario'   => fn ($q, $v) => $q->whereHas('usuario', fn ($u) => $u->where('nombre_usuario', 'like', "%{$v}%")),
+        ]);
+
+        $transferencias = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Transferencias/Index', compact('transferencias', 'filtros'));
     }
 
     public function create(Request $request)

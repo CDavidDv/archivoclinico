@@ -5,14 +5,31 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\DerechoHabiente;
+use App\Http\Concerns\FiltraConsulta;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class DerechoHabienteController extends Controller
 {
-    public function index() {
-        $derechoHabientes = DerechoHabiente::all();
-        return Inertia::render('DerechoHabientes/Index', compact('derechoHabientes'));
+    use FiltraConsulta;
+
+    public function index(Request $request) {
+        $query = DerechoHabiente::query()->orderBy('clave_generada');
+
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'clave_generada' => 'like',
+            'nombre'         => fn ($q, $v) => $q->where(fn ($s) => $s
+                ->where('nombre', 'like', "%{$v}%")
+                ->orWhere('apellido_paterno', 'like', "%{$v}%")
+                ->orWhere('apellido_materno', 'like', "%{$v}%")),
+            'rfc'            => 'like',
+            'nss'            => 'like',
+            'genero'         => 'like',
+        ]);
+
+        $derechoHabientes = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('DerechoHabientes/Index', compact('derechoHabientes', 'filtros'));
     }
 
     public function create() {

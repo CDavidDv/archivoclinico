@@ -12,21 +12,32 @@ use Illuminate\Support\Facades\DB;
 
 class SolicitudAbastecimientoController extends Controller
 {
+    use \App\Http\Concerns\FiltraConsulta;
+
     public function index(Request $request)
     {
         $usuario = $request->user();
 
-        $solicitudes = SolicitudAbastecimiento::with(['usuarioSolicita', 'usuarioAtiende'])
+        $query = SolicitudAbastecimiento::with(['usuarioSolicita', 'usuarioAtiende'])
             ->withCount('detalles')
             ->when(
                 !$usuario->hasRol(Usuario::ROL_ADMINISTRADOR, Usuario::ROL_ALMACEN),
                 fn ($q) => $q->delModulo($this->moduloDelUsuario($usuario))
             )
             ->latest('fecha_solicitud')
-            ->latest('id')
-            ->paginate(20);
+            ->latest('id');
 
-        return Inertia::render('Solicitudes/Index', compact('solicitudes'));
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'folio'              => 'like',
+            'modulo_solicitante' => 'like',
+            'solicita'           => fn ($q, $v) => $q->whereHas('usuarioSolicita', fn ($u) => $u->where('nombre_usuario', 'like', "%{$v}%")),
+            'fecha_solicitud'    => 'date',
+            'estatus'            => 'exact',
+        ]);
+
+        $solicitudes = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Solicitudes/Index', compact('solicitudes', 'filtros'));
     }
 
     public function create(Request $request)

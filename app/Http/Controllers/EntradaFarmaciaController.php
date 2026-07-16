@@ -14,15 +14,24 @@ class EntradaFarmaciaController extends Controller
         private readonly InventarioFarmaciaService $inventario
     ) {}
 
-    public function index()
+    use \App\Http\Concerns\FiltraConsulta;
+
+    public function index(Request $request)
     {
-        $entradas = EntradaFarmacia::with(['usuario', 'transferencia'])
+        $query = EntradaFarmacia::with(['usuario', 'transferencia'])
             ->withCount('detalles')
             ->latest('fecha')
-            ->latest('id')
-            ->paginate(20);
+            ->latest('id');
 
-        return Inertia::render('EntradasFarmacia/Index', compact('entradas'));
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'id'      => 'exact',
+            'fecha'   => 'date',
+            'usuario' => fn ($q, $v) => $q->whereHas('usuario', fn ($u) => $u->where('nombre_usuario', 'like', "%{$v}%")),
+        ]);
+
+        $entradas = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('EntradasFarmacia/Index', compact('entradas', 'filtros'));
     }
 
     public function create()

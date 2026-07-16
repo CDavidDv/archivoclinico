@@ -16,15 +16,26 @@ class EntradaAlmacenController extends Controller
         private readonly InventarioAlmacenService $inventario
     ) {}
 
-    public function index()
+    use \App\Http\Concerns\FiltraConsulta;
+
+    public function index(Request $request)
     {
-        $entradas = EntradaAlmacen::with(['proveedor', 'usuario'])
+        $query = EntradaAlmacen::with(['proveedor', 'usuario'])
             ->withCount('detalles')
             ->latest('fecha')
-            ->latest('id')
-            ->paginate(20);
+            ->latest('id');
 
-        return Inertia::render('EntradasAlmacen/Index', compact('entradas'));
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'id'        => 'exact',
+            'fecha'     => 'date',
+            'tipo'      => 'like',
+            'proveedor' => fn ($q, $v) => $q->whereHas('proveedor', fn ($p) => $p->where('nombre', 'like', "%{$v}%")),
+            'usuario'   => fn ($q, $v) => $q->whereHas('usuario', fn ($u) => $u->where('nombre_usuario', 'like', "%{$v}%")),
+        ]);
+
+        $entradas = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('EntradasAlmacen/Index', compact('entradas', 'filtros'));
     }
 
     public function create()

@@ -3,12 +3,20 @@ import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
-import Pagination from '@/Components/Pagination.vue';
+import DataTable from '@/Components/DataTable.vue';
 
-defineProps({ salidas: Object });
+defineProps({ salidas: Object, filtros: { type: Object, default: () => ({}) } });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
 const tipoLabel = (t) => (t || '').replace('_', ' ');
+const columns = [
+    { key: 'id', label: 'ID', filter: 'text' },
+    { key: 'fecha', label: 'Fecha', filter: 'date' },
+    { key: 'tipo', label: 'Tipo', filter: 'text' },
+    { key: 'area_destino', label: 'Área destino', filter: 'text' },
+    { key: 'usuario', label: 'Usuario', filter: 'text' },
+    { key: 'detalles_count', label: 'Ítems', filter: false },
+];
 </script>
 
 <template>
@@ -20,36 +28,16 @@ const tipoLabel = (t) => (t || '').replace('_', ' ');
         </PageHeader>
 
         <Card title="Historial de Salidas">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                    <thead>
-                        <tr class="text-left text-gray-500">
-                            <th class="px-3 py-2 font-medium">ID</th>
-                            <th class="px-3 py-2 font-medium">Fecha</th>
-                            <th class="px-3 py-2 font-medium">Tipo</th>
-                            <th class="px-3 py-2 font-medium">Área destino</th>
-                            <th class="px-3 py-2 font-medium">Usuario</th>
-                            <th class="px-3 py-2 font-medium">Ítems</th>
-                            <th class="px-3 py-2 font-medium text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                        <tr v-for="s in salidas.data" :key="s.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/40">
-                            <td class="px-3 py-2 font-semibold">#{{ s.id }}</td>
-                            <td class="px-3 py-2">{{ fecha(s.fecha) }}</td>
-                            <td class="px-3 py-2 capitalize">{{ tipoLabel(s.tipo) }}</td>
-                            <td class="px-3 py-2">{{ s.area_destino || '—' }}</td>
-                            <td class="px-3 py-2">{{ s.usuario ? s.usuario.nombre_usuario : '—' }}</td>
-                            <td class="px-3 py-2">{{ s.detalles_count }}</td>
-                            <td class="px-3 py-2 text-right">
-                                <Link :href="route('salidas_almacen.show', s.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
-                            </td>
-                        </tr>
-                        <tr v-if="salidas.data.length === 0"><td colspan="7" class="px-3 py-6 text-center text-gray-400">No hay salidas.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <Pagination :links="salidas.links" />
+            <DataTable :columns="columns" :paginator="salidas" route-name="salidas_almacen.index" :filters="filtros" has-actions empty="No hay salidas.">
+                <template #col-id="{ row }"><span class="font-semibold">#{{ row.id }}</span></template>
+                <template #col-fecha="{ row }">{{ fecha(row.fecha) }}</template>
+                <template #col-tipo="{ row }"><span class="capitalize">{{ tipoLabel(row.tipo) }}</span></template>
+                <template #col-area_destino="{ row }">{{ row.area_destino || '—' }}</template>
+                <template #col-usuario="{ row }">{{ row.usuario ? row.usuario.nombre_usuario : '—' }}</template>
+                <template #actions="{ row }">
+                    <Link :href="route('salidas_almacen.show', row.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
+                </template>
+            </DataTable>
         </Card>
     </AppLayout>
 </template>

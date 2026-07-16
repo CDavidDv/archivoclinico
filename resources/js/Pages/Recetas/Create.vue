@@ -6,6 +6,7 @@ import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SelectField from '@/Components/Field/Select.vue';
+import Combobox from '@/Components/Field/Combobox.vue';
 import TextField from '@/Components/Field/Text.vue';
 import TextareaField from '@/Components/Field/Textarea.vue';
 
@@ -43,7 +44,7 @@ const submit = () => form.post(route('recetas.store'));
                 <p v-if="form.errors.detalles" class="mb-2 text-sm text-red-600">{{ form.errors.detalles }}</p>
 
                 <div v-for="(d, i) in form.detalles" :key="i" class="mb-3 grid grid-cols-12 gap-2">
-                    <div class="col-span-5"><SelectField v-model="d.id_medicamento" :options="medOptions" placeholder="Medicamento" :error="form.errors[`detalles.${i}.id_medicamento`]" /></div>
+                    <div class="col-span-5"><Combobox v-model="d.id_medicamento" :options="medOptions" placeholder="Escribe clave o nombre…" :error="form.errors[`detalles.${i}.id_medicamento`]" /></div>
                     <div class="col-span-2"><TextField v-model="d.cantidad_prescrita" type="number" min="1" placeholder="Cant." :error="form.errors[`detalles.${i}.cantidad_prescrita`]" /></div>
                     <div class="col-span-4"><TextField v-model="d.dosis" placeholder="Dosis (ej. 1 c/8h)" :error="form.errors[`detalles.${i}.dosis`]" /></div>
                     <div class="col-span-1 flex items-start pt-1">

@@ -8,10 +8,25 @@ use Illuminate\Http\Request;
 
 class ExpedienteController extends Controller
 {
-    public function index()
+    use \App\Http\Concerns\FiltraConsulta;
+
+    public function index(Request $request)
     {
-        $expedientes = Expediente::with('derechoHabiente')->get();
-        return Inertia::render('Expedientes/Index', compact('expedientes'));
+        $query = Expediente::with('derechoHabiente')->orderBy('codigo');
+
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'codigo'         => 'like',
+            'localizacion'   => 'like',
+            'tipo'           => 'like',
+            'derechohabiente' => fn ($q, $v) => $q->whereHas('derechoHabiente', fn ($dh) => $dh
+                ->where('nombre', 'like', "%{$v}%")
+                ->orWhere('apellido_paterno', 'like', "%{$v}%")
+                ->orWhere('apellido_materno', 'like', "%{$v}%")),
+        ]);
+
+        $expedientes = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Expedientes/Index', compact('expedientes', 'filtros'));
     }
 
     public function create()

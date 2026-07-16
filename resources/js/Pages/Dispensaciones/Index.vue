@@ -3,12 +3,19 @@ import { Link } from '@inertiajs/vue3';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
-import Pagination from '@/Components/Pagination.vue';
+import DataTable from '@/Components/DataTable.vue';
 
-defineProps({ dispensaciones: Object });
+defineProps({ dispensaciones: Object, filtros: { type: Object, default: () => ({}) } });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
 const nom = (p) => (p ? `${p.nombre} ${p.apellido_paterno}` : '—');
+const columns = [
+    { key: 'id', label: 'ID', filter: 'text' },
+    { key: 'receta', label: 'Receta', filter: 'text' },
+    { key: 'derechohabiente', label: 'Derechohabiente', filter: 'text' },
+    { key: 'fecha', label: 'Fecha', filter: 'date' },
+    { key: 'usuario', label: 'Usuario', filter: 'text' },
+];
 </script>
 
 <template>
@@ -16,34 +23,16 @@ const nom = (p) => (p ? `${p.nombre} ${p.apellido_paterno}` : '—');
         <PageHeader title="Dispensaciones" />
 
         <Card title="Historial de Dispensaciones">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
-                    <thead>
-                        <tr class="text-left text-gray-500">
-                            <th class="px-3 py-2 font-medium">ID</th>
-                            <th class="px-3 py-2 font-medium">Receta</th>
-                            <th class="px-3 py-2 font-medium">Derechohabiente</th>
-                            <th class="px-3 py-2 font-medium">Fecha</th>
-                            <th class="px-3 py-2 font-medium">Usuario</th>
-                            <th class="px-3 py-2 font-medium text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
-                        <tr v-for="d in dispensaciones.data" :key="d.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/40">
-                            <td class="px-3 py-2 font-semibold">#{{ d.id }}</td>
-                            <td class="px-3 py-2">{{ d.receta ? d.receta.folio : '—' }}</td>
-                            <td class="px-3 py-2">{{ d.receta && d.receta.derecho_habiente ? nom(d.receta.derecho_habiente) : '—' }}</td>
-                            <td class="px-3 py-2">{{ fecha(d.fecha) }}</td>
-                            <td class="px-3 py-2">{{ d.usuario ? d.usuario.nombre_usuario : '—' }}</td>
-                            <td class="px-3 py-2 text-right">
-                                <Link :href="route('dispensaciones.show', d.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
-                            </td>
-                        </tr>
-                        <tr v-if="dispensaciones.data.length === 0"><td colspan="6" class="px-3 py-6 text-center text-gray-400">No hay dispensaciones.</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <Pagination :links="dispensaciones.links" />
+            <DataTable :columns="columns" :paginator="dispensaciones" route-name="dispensaciones.index" :filters="filtros" has-actions empty="No hay dispensaciones.">
+                <template #col-id="{ row }"><span class="font-semibold">#{{ row.id }}</span></template>
+                <template #col-receta="{ row }">{{ row.receta ? row.receta.folio : '—' }}</template>
+                <template #col-derechohabiente="{ row }">{{ row.receta && row.receta.derecho_habiente ? nom(row.receta.derecho_habiente) : '—' }}</template>
+                <template #col-fecha="{ row }">{{ fecha(row.fecha) }}</template>
+                <template #col-usuario="{ row }">{{ row.usuario ? row.usuario.nombre_usuario : '—' }}</template>
+                <template #actions="{ row }">
+                    <Link :href="route('dispensaciones.show', row.id)" class="rounded border border-emerald-500 px-2 py-1 text-xs text-emerald-700 hover:bg-emerald-50">Ver</Link>
+                </template>
+            </DataTable>
         </Card>
     </AppLayout>
 </template>

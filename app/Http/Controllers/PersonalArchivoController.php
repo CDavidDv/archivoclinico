@@ -8,10 +8,27 @@ use Illuminate\Http\Request;
 
 class PersonalArchivoController extends Controller
 {
-    public function index()
+    use \App\Http\Concerns\FiltraConsulta;
+
+    public function index(Request $request)
     {
-        $personalArchivos = PersonalArchivo::all();
-        return Inertia::render('PersonalArchivos/Index', compact('personalArchivos'));
+        $query = PersonalArchivo::query()->orderBy('numero_empleado');
+
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'numero_empleado' => 'like',
+            'nombre'          => fn ($q, $v) => $q->where(fn ($s) => $s
+                ->where('nombre', 'like', "%{$v}%")
+                ->orWhere('apellido_paterno', 'like', "%{$v}%")
+                ->orWhere('apellido_materno', 'like', "%{$v}%")),
+            'rfc'             => 'like',
+            'cargo'           => 'like',
+            'area'            => 'like',
+            'tipo'            => 'like',
+        ]);
+
+        $personalArchivos = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('PersonalArchivos/Index', compact('personalArchivos', 'filtros'));
     }
 
     public function create()

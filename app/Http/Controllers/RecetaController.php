@@ -14,23 +14,31 @@ use Illuminate\Validation\Rule;
 
 class RecetaController extends Controller
 {
+    use \App\Http\Concerns\FiltraConsulta;
+
     public function index(Request $request)
     {
-        $estatus = $request->query('estatus');
-
-        $recetas = Receta::with(['derechoHabiente', 'medico'])
+        $query = Receta::with(['derechoHabiente', 'medico'])
             ->withCount('detalles')
-            ->when($estatus === 'pendiente', fn ($q) => $q->pendientes())
-            ->when(
-                $estatus && $estatus !== 'pendiente',
-                fn ($q) => $q->where('estatus', $estatus)
-            )
             ->latest('fecha_receta')
-            ->latest('id')
-            ->paginate(20)
-            ->withQueryString();
+            ->latest('id');
 
-        return Inertia::render('Recetas/Index', compact('recetas', 'estatus'));
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'folio'           => 'like',
+            'derechohabiente' => fn ($q, $v) => $q->whereHas('derechoHabiente', fn ($dh) => $dh
+                ->where('nombre', 'like', "%{$v}%")
+                ->orWhere('apellido_paterno', 'like', "%{$v}%")
+                ->orWhere('apellido_materno', 'like', "%{$v}%")),
+            'medico'          => fn ($q, $v) => $q->whereHas('medico', fn ($m) => $m
+                ->where('nombre', 'like', "%{$v}%")
+                ->orWhere('apellido_paterno', 'like', "%{$v}%")),
+            'fecha_receta'    => 'date',
+            'estatus'         => 'exact',
+        ]);
+
+        $recetas = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Recetas/Index', compact('recetas', 'filtros'));
     }
 
     public function create()

@@ -10,13 +10,23 @@ use Inertia\Inertia;
 
 class MedicamentoController extends Controller
 {
-    public function index()
-    {
-        $medicamentos = Medicamento::conStockTotal()
-            ->orderBy('clave')
-            ->get();
+    use \App\Http\Concerns\FiltraConsulta;
 
-        return Inertia::render('Medicamentos/Index', compact('medicamentos'));
+    public function index(Request $request)
+    {
+        $query = Medicamento::conStockTotal()->orderBy('clave');
+
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'clave'            => 'like',
+            'nombre'           => 'like',
+            'sustancia_activa' => 'like',
+            'presentacion'     => 'like',
+            'controlado'       => 'exact',
+        ]);
+
+        $medicamentos = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Medicamentos/Index', compact('medicamentos', 'filtros'));
     }
 
     public function create()

@@ -12,18 +12,32 @@ use Illuminate\Http\Request;
 
 class DispensacionController extends Controller
 {
+    use \App\Http\Concerns\FiltraConsulta;
+
     public function __construct(
         private readonly DispensacionService $servicio,
         private readonly AutorizacionService $autorizaciones
     ) {}
 
-    public function index()
+    public function index(Request $request)
     {
-        $dispensaciones = Dispensacion::with(['receta.derechoHabiente', 'usuario'])
-            ->latest('fecha')
-            ->paginate(20);
+        $query = Dispensacion::with(['receta.derechoHabiente', 'usuario'])
+            ->latest('fecha');
 
-        return Inertia::render('Dispensaciones/Index', compact('dispensaciones'));
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'id'       => 'exact',
+            'receta'   => fn ($q, $v) => $q->whereHas('receta', fn ($r) => $r->where('folio', 'like', "%{$v}%")),
+            'derechohabiente' => fn ($q, $v) => $q->whereHas('receta.derechoHabiente', fn ($dh) => $dh
+                ->where('nombre', 'like', "%{$v}%")
+                ->orWhere('apellido_paterno', 'like', "%{$v}%")
+                ->orWhere('apellido_materno', 'like', "%{$v}%")),
+            'fecha'    => 'date',
+            'usuario'  => fn ($q, $v) => $q->whereHas('usuario', fn ($u) => $u->where('nombre_usuario', 'like', "%{$v}%")),
+        ]);
+
+        $dispensaciones = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Dispensaciones/Index', compact('dispensaciones', 'filtros'));
     }
 
     public function create(Receta $receta)

@@ -4,13 +4,31 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Medico;
+use App\Http\Concerns\FiltraConsulta;
 use Illuminate\Http\Request;
 
 class MedicoController extends Controller
 {
-    public function index() {
-        $medicos = Medico::all();
-        return Inertia::render('Medicos/Index', compact('medicos'));
+    use FiltraConsulta;
+
+    public function index(Request $request) {
+        $query = Medico::query()->orderBy('numero_empleado');
+
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'numero_empleado' => 'like',
+            'nombre'          => fn ($q, $v) => $q->where(fn ($s) => $s
+                ->where('nombre', 'like', "%{$v}%")
+                ->orWhere('apellido_paterno', 'like', "%{$v}%")
+                ->orWhere('apellido_materno', 'like', "%{$v}%")),
+            'rfc'             => 'like',
+            'cargo'           => 'like',
+            'area'            => 'like',
+            'tipo'            => 'like',
+        ]);
+
+        $medicos = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Medicos/Index', compact('medicos', 'filtros'));
     }
 
     public function create() {

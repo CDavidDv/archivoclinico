@@ -16,18 +16,32 @@ class PrestamoController extends Controller
        LISTADO
     ===================================================== */
 
-    public function index()
+    use \App\Http\Concerns\FiltraConsulta;
+
+    public function index(Request $request)
     {
-        $prestamos = Prestamo::with([
+        $query = Prestamo::with([
                 'expediente.derechoHabiente',
                 'medico',
                 'entregadoPor',
                 'recibidoPor'
             ])
-            ->latest('fecha_salida')
-            ->get();
+            ->latest('fecha_salida');
 
-        return Inertia::render('Prestamos/Index', compact('prestamos'));
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'expediente'  => fn ($q, $v) => $q->whereHas('expediente', fn ($e) => $e->where('codigo', 'like', "%{$v}%")),
+            'medico'      => fn ($q, $v) => $q->whereHas('medico', fn ($m) => $m
+                ->where('nombre', 'like', "%{$v}%")
+                ->orWhere('apellido_paterno', 'like', "%{$v}%")),
+            'area_destino' => 'like',
+            'fecha_salida' => 'date',
+            'fecha_regreso' => 'date',
+            'estatus'      => 'exact',
+        ]);
+
+        $prestamos = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Prestamos/Index', compact('prestamos', 'filtros'));
     }
 
     /* =====================================================

@@ -15,15 +15,25 @@ class SalidaFarmaciaController extends Controller
         private readonly InventarioFarmaciaService $inventario
     ) {}
 
-    public function index()
+    use \App\Http\Concerns\FiltraConsulta;
+
+    public function index(Request $request)
     {
-        $salidas = SalidaFarmacia::with('usuario')
+        $query = SalidaFarmacia::with('usuario')
             ->withCount('detalles')
             ->latest('fecha')
-            ->latest('id')
-            ->paginate(20);
+            ->latest('id');
 
-        return Inertia::render('SalidasFarmacia/Index', compact('salidas'));
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'id'      => 'exact',
+            'fecha'   => 'date',
+            'tipo'    => 'like',
+            'usuario' => fn ($q, $v) => $q->whereHas('usuario', fn ($u) => $u->where('nombre_usuario', 'like', "%{$v}%")),
+        ]);
+
+        $salidas = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('SalidasFarmacia/Index', compact('salidas', 'filtros'));
     }
 
     public function create()

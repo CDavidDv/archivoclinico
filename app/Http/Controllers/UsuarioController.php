@@ -13,11 +13,22 @@ class UsuarioController extends Controller
        LISTADO
     ===================================================== */
 
-    public function index()
-    {
-        $usuarios = Usuario::orderBy('nombre_usuario')->get();
+    use \App\Http\Concerns\FiltraConsulta;
 
-        return Inertia::render('Usuarios/Index', compact('usuarios'));
+    public function index(Request $request)
+    {
+        $query = Usuario::query()->orderBy('nombre_usuario');
+
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'nombre_usuario' => 'like',
+            'email'          => 'like',
+            'telefono'       => 'like',
+            'rol'            => 'exact',
+        ]);
+
+        $usuarios = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Usuarios/Index', compact('usuarios', 'filtros'));
     }
 
     /* =====================================================

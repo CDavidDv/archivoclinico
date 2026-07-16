@@ -9,13 +9,22 @@ use Inertia\Inertia;
 
 class ProductoController extends Controller
 {
-    public function index()
-    {
-        $productos = Producto::conStockTotal()
-            ->orderBy('clave')
-            ->get();
+    use \App\Http\Concerns\FiltraConsulta;
 
-        return Inertia::render('Productos/Index', compact('productos'));
+    public function index(Request $request)
+    {
+        $query = Producto::conStockTotal()->orderBy('clave');
+
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'clave'         => 'like',
+            'nombre'        => 'like',
+            'categoria'     => 'like',
+            'unidad_medida' => 'like',
+        ]);
+
+        $productos = $query->paginate(20)->withQueryString();
+
+        return Inertia::render('Productos/Index', compact('productos', 'filtros'));
     }
 
     public function create()

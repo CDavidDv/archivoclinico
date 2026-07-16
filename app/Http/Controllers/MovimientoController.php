@@ -10,30 +10,24 @@ use Carbon\Carbon;
 
 class MovimientoController extends Controller
 {
+    use \App\Http\Concerns\FiltraConsulta;
+
     public function index(Request $request)
     {
         $query = Movimiento::with('usuario')
             ->orderBy('fecha_accion', 'desc');
 
-        if ($request->filled('usuario')) {
-            $query->where('id_usuario', $request->usuario);
-        }
+        $filtros = $this->aplicarFiltros($query, $request, [
+            'fecha'    => 'date:fecha_accion',
+            'usuario'  => 'exact:id_usuario',
+            'accion'   => 'like',
+            'tabla'    => 'like:tabla_afectada',
+            'registro' => 'exact:id_registro_afectado',
+        ]);
 
-        if ($request->filled('accion')) {
-            $query->where('accion', $request->accion);
-        }
+        $movimientos = $query->paginate(20)->withQueryString();
+        $usuarios = Usuario::orderBy('nombre_usuario')->get(['id', 'nombre_usuario']);
 
-        if ($request->filled('desde')) {
-            $query->whereDate('fecha_accion', '>=', $request->desde);
-        }
-
-        if ($request->filled('hasta')) {
-            $query->whereDate('fecha_accion', '<=', $request->hasta);
-        }
-
-        $movimientos = $query->paginate(15);
-        $usuarios = Usuario::orderBy('nombre_usuario')->get();
-
-        return Inertia::render('Movimientos/Index', compact('movimientos','usuarios'));
+        return Inertia::render('Movimientos/Index', compact('movimientos', 'usuarios', 'filtros'));
     }
 }
