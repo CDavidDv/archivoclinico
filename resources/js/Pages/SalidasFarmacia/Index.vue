@@ -5,7 +5,7 @@ import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
 import DataTable from '@/Components/DataTable.vue';
 
-defineProps({ salidas: Object, filtros: { type: Object, default: () => ({}) } });
+defineProps({ salidas: Object, filtros: { type: Object, default: () => ({}) }, orden: { type: Object, default: () => ({}) } });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
 const columns = [
@@ -13,7 +13,7 @@ const columns = [
     { key: 'fecha', label: 'Fecha', filter: 'date' },
     { key: 'tipo', label: 'Tipo', filter: 'text' },
     { key: 'usuario', label: 'Usuario', filter: 'text' },
-    { key: 'detalles_count', label: 'Ítems', filter: false },
+    { key: 'detalles_count', label: 'Ítems', filter: false, sortable: true, sortKey: 'items' },
 ];
 </script>
 
@@ -26,7 +26,7 @@ const columns = [
         </PageHeader>
 
         <Card title="Historial de Salidas (mermas/ajustes)">
-            <DataTable :columns="columns" :paginator="salidas" route-name="salidas_farmacia.index" :filters="filtros" has-actions empty="No hay salidas.">
+            <DataTable :columns="columns" :paginator="salidas" route-name="salidas_farmacia.index" :filters="filtros" :orden="orden" has-actions empty="No hay salidas.">
                 <template #col-id="{ row }"><span class="font-semibold">#{{ row.id }}</span></template>
                 <template #col-fecha="{ row }">{{ fecha(row.fecha) }}</template>
                 <template #col-tipo="{ row }"><span class="capitalize">{{ row.tipo }}</span></template>

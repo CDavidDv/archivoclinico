@@ -5,7 +5,7 @@ import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
 import DataTable from '@/Components/DataTable.vue';
 
-defineProps({ solicitudes: Object, filtros: { type: Object, default: () => ({}) } });
+defineProps({ solicitudes: Object, filtros: { type: Object, default: () => ({}) }, orden: { type: Object, default: () => ({}) } });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
 const badge = (e) => ({
@@ -20,7 +20,7 @@ const columns = [
     { key: 'modulo_solicitante', label: 'Módulo', filter: 'text' },
     { key: 'solicita', label: 'Solicita', filter: 'text' },
     { key: 'fecha_solicitud', label: 'Fecha', filter: 'date' },
-    { key: 'detalles_count', label: 'Ítems', filter: false },
+    { key: 'detalles_count', label: 'Ítems', filter: false, sortable: true, sortKey: 'items' },
     { key: 'estatus', label: 'Estatus', filter: 'select', options: ['pendiente', 'aprobada', 'surtida', 'rechazada'].map((e) => ({ value: e, label: e })) },
 ];
 </script>
@@ -34,7 +34,7 @@ const columns = [
         </PageHeader>
 
         <Card title="Listado de Solicitudes">
-            <DataTable :columns="columns" :paginator="solicitudes" route-name="solicitudes.index" :filters="filtros" has-actions empty="No hay solicitudes.">
+            <DataTable :columns="columns" :paginator="solicitudes" route-name="solicitudes.index" :filters="filtros" :orden="orden" has-actions empty="No hay solicitudes.">
                 <template #col-folio="{ row }"><span class="font-semibold">{{ row.folio }}</span></template>
                 <template #col-modulo_solicitante="{ row }"><span class="capitalize">{{ row.modulo_solicitante }}</span></template>
                 <template #col-solicita="{ row }">{{ row.usuario_solicita ? row.usuario_solicita.nombre_usuario : '—' }}</template>

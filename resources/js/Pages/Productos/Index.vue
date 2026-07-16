@@ -6,7 +6,7 @@ import Card from '@/Components/Card.vue';
 import DataTable from '@/Components/DataTable.vue';
 import { confirmarEliminar } from '@/lib/swal';
 
-defineProps({ productos: Object, filtros: { type: Object, default: () => ({}) } });
+defineProps({ productos: Object, filtros: { type: Object, default: () => ({}) }, orden: { type: Object, default: () => ({}) } });
 
 const cap = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '');
 const columns = [
@@ -14,8 +14,8 @@ const columns = [
     { key: 'nombre', label: 'Nombre', filter: 'text' },
     { key: 'categoria', label: 'Categoría', filter: 'text' },
     { key: 'unidad_medida', label: 'Unidad', filter: 'text' },
-    { key: 'stock_total', label: 'Stock', filter: false },
-    { key: 'stock_minimo', label: 'Mínimo', filter: false },
+    { key: 'stock_total', label: 'Stock', filter: false, sortable: true, sortKey: 'stock' },
+    { key: 'stock_minimo', label: 'Mínimo', filter: false, sortable: true, sortKey: 'stock_minimo' },
 ];
 
 const eliminar = async (p) => {
@@ -32,7 +32,7 @@ const eliminar = async (p) => {
         </PageHeader>
 
         <Card title="Catálogo de Productos">
-            <DataTable :columns="columns" :paginator="productos" route-name="productos.index" :filters="filtros" has-actions empty="No hay productos registrados.">
+            <DataTable :columns="columns" :paginator="productos" route-name="productos.index" :filters="filtros" :orden="orden" has-actions empty="No hay productos registrados.">
                 <template #col-clave="{ row }"><span class="font-semibold">{{ row.clave }}</span></template>
                 <template #col-categoria="{ row }"><span class="rounded-full bg-gray-100 text-gray-600 px-2 py-0.5 text-xs">{{ cap(row.categoria) }}</span></template>
                 <template #col-stock_total="{ row }">

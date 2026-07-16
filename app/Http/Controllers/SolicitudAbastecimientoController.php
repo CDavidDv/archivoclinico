@@ -35,9 +35,11 @@ class SolicitudAbastecimientoController extends Controller
             'estatus'            => 'exact',
         ]);
 
+        $orden = $this->aplicarOrden($query, $request, ['items' => 'detalles_count']);
+
         $solicitudes = $query->paginate(20)->withQueryString();
 
-        return Inertia::render('Solicitudes/Index', compact('solicitudes', 'filtros'));
+        return Inertia::render('Solicitudes/Index', compact('solicitudes', 'filtros', 'orden'));
     }
 
     public function create(Request $request)

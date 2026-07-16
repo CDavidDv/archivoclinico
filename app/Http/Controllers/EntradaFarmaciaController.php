@@ -29,9 +29,11 @@ class EntradaFarmaciaController extends Controller
             'usuario' => fn ($q, $v) => $q->whereHas('usuario', fn ($u) => $u->where('nombre_usuario', 'like', "%{$v}%")),
         ]);
 
+        $orden = $this->aplicarOrden($query, $request, ['items' => 'detalles_count']);
+
         $entradas = $query->paginate(20)->withQueryString();
 
-        return Inertia::render('EntradasFarmacia/Index', compact('entradas', 'filtros'));
+        return Inertia::render('EntradasFarmacia/Index', compact('entradas', 'filtros', 'orden'));
     }
 
     public function create()

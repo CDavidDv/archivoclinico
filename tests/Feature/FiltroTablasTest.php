@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\DerechoHabiente;
+use App\Models\LoteFarmacia;
 use App\Models\Medicamento;
 use App\Models\Usuario;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -42,6 +43,24 @@ class FiltroTablasTest extends TestCase
                 ->component('DerechoHabientes/Index')
                 ->has('derechoHabientes.data', 1)
                 ->where('derechoHabientes.data.0.nombre', 'Juan'));
+    }
+
+    public function test_medicamentos_ordena_por_stock_desc(): void
+    {
+        $this->actingAsRol(Usuario::ROL_ADMINISTRADOR);
+
+        $bajo = Medicamento::factory()->create(['clave' => 'BAJO']);
+        $alto = Medicamento::factory()->create(['clave' => 'ALTO']);
+
+        LoteFarmacia::factory()->for($bajo)->create(['caducidad' => now()->addYear(), 'cantidad_actual' => 5]);
+        LoteFarmacia::factory()->for($alto)->create(['caducidad' => now()->addYear(), 'cantidad_actual' => 500]);
+
+        $this->get(route('medicamentos.index', ['sort' => 'stock', 'dir' => 'desc']))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('orden.campo', 'stock')
+                ->where('orden.dir', 'desc')
+                ->where('medicamentos.data.0.clave', 'ALTO'));
     }
 
     public function test_medicamentos_pagina_20_por_seccion(): void

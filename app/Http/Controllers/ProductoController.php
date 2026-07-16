@@ -22,9 +22,14 @@ class ProductoController extends Controller
             'unidad_medida' => 'like',
         ]);
 
+        $orden = $this->aplicarOrden($query, $request, [
+            'stock'        => 'stock_total',
+            'stock_minimo' => 'stock_minimo',
+        ]);
+
         $productos = $query->paginate(20)->withQueryString();
 
-        return Inertia::render('Productos/Index', compact('productos', 'filtros'));
+        return Inertia::render('Productos/Index', compact('productos', 'filtros', 'orden'));
     }
 
     public function create()

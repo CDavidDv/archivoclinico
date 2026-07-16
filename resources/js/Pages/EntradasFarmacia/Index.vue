@@ -5,14 +5,14 @@ import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
 import DataTable from '@/Components/DataTable.vue';
 
-defineProps({ entradas: Object, filtros: { type: Object, default: () => ({}) } });
+defineProps({ entradas: Object, filtros: { type: Object, default: () => ({}) }, orden: { type: Object, default: () => ({}) } });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
 const columns = [
     { key: 'id', label: 'ID', filter: 'text' },
     { key: 'fecha', label: 'Fecha', filter: 'date' },
     { key: 'usuario', label: 'Usuario', filter: 'text' },
-    { key: 'detalles_count', label: 'Ítems', filter: false },
+    { key: 'detalles_count', label: 'Ítems', filter: false, sortable: true, sortKey: 'items' },
     { key: 'origen', label: 'Origen', filter: false },
 ];
 </script>
@@ -26,7 +26,7 @@ const columns = [
         </PageHeader>
 
         <Card title="Historial de Entradas">
-            <DataTable :columns="columns" :paginator="entradas" route-name="entradas_farmacia.index" :filters="filtros" has-actions empty="No hay entradas.">
+            <DataTable :columns="columns" :paginator="entradas" route-name="entradas_farmacia.index" :filters="filtros" :orden="orden" has-actions empty="No hay entradas.">
                 <template #col-id="{ row }"><span class="font-semibold">#{{ row.id }}</span></template>
                 <template #col-fecha="{ row }">{{ fecha(row.fecha) }}</template>
                 <template #col-usuario="{ row }">{{ row.usuario ? row.usuario.nombre_usuario : '—' }}</template>

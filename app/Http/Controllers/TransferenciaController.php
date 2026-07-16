@@ -35,9 +35,11 @@ class TransferenciaController extends Controller
             'usuario'   => fn ($q, $v) => $q->whereHas('usuario', fn ($u) => $u->where('nombre_usuario', 'like', "%{$v}%")),
         ]);
 
+        $orden = $this->aplicarOrden($query, $request, ['items' => 'detalles_count']);
+
         $transferencias = $query->paginate(20)->withQueryString();
 
-        return Inertia::render('Transferencias/Index', compact('transferencias', 'filtros'));
+        return Inertia::render('Transferencias/Index', compact('transferencias', 'filtros', 'orden'));
     }
 
     public function create(Request $request)

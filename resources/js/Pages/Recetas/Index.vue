@@ -6,7 +6,7 @@ import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
 import DataTable from '@/Components/DataTable.vue';
 
-defineProps({ recetas: Object, filtros: { type: Object, default: () => ({}) } });
+defineProps({ recetas: Object, filtros: { type: Object, default: () => ({}) }, orden: { type: Object, default: () => ({}) } });
 
 const page = usePage();
 const roles = computed(() => page.props.auth?.user?.roles ?? []);
@@ -26,7 +26,7 @@ const columns = [
     { key: 'derechohabiente', label: 'Derechohabiente', filter: 'text' },
     { key: 'medico', label: 'Médico', filter: 'text' },
     { key: 'fecha_receta', label: 'Fecha', filter: 'date' },
-    { key: 'detalles_count', label: 'Ítems', filter: false },
+    { key: 'detalles_count', label: 'Ítems', filter: false, sortable: true, sortKey: 'items' },
     { key: 'estatus', label: 'Estatus', filter: 'select', options: ['pendiente', 'parcial', 'surtida', 'cancelada'].map((e) => ({ value: e, label: e })) },
 ];
 </script>
@@ -40,7 +40,7 @@ const columns = [
         </PageHeader>
 
         <Card title="Cola de Recetas">
-            <DataTable :columns="columns" :paginator="recetas" route-name="recetas.index" :filters="filtros" has-actions empty="No hay recetas.">
+            <DataTable :columns="columns" :paginator="recetas" route-name="recetas.index" :filters="filtros" :orden="orden" has-actions empty="No hay recetas.">
                 <template #col-folio="{ row }"><span class="font-semibold">{{ row.folio }}</span></template>
                 <template #col-derechohabiente="{ row }">{{ nom(row.derecho_habiente) }}</template>
                 <template #col-medico="{ row }">{{ nom(row.medico) }}</template>

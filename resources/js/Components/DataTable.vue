@@ -9,7 +9,7 @@ import Pagination from '@/Components/Pagination.vue';
  *  - Botón para remover todos los filtros.
  *  - Paginación (usa el paginador de Laravel).
  *
- * columns: [{ key, label, filter: false|'text'|'select'|'date', options, align, filterKey }]
+ * columns: [{ key, label, filter: false|'text'|'select'|'date', options, align, filterKey, sortable, sortKey }]
  * Slots:  #col-<key>="{ row }"  celda personalizada
  *         #actions="{ row }"    columna de acciones (a la derecha)
  */
@@ -19,11 +19,17 @@ const props = defineProps({
     routeName: { type: String, required: true },
     routeParams: { type: Object, default: () => ({}) },
     filters: { type: Object, default: () => ({}) },
+    orden: { type: Object, default: () => ({ campo: null, dir: 'asc' }) },
     empty: { type: String, default: 'No hay registros.' },
     hasActions: { type: Boolean, default: false },
 });
 
 const filtrables = computed(() => props.columns.filter((c) => c.filter));
+
+// Ordenamiento
+const sortCampo = ref(props.orden?.campo ?? null);
+const sortDir = ref(props.orden?.dir ?? 'asc');
+const sortKeyDe = (c) => c.sortKey || c.key;
 
 // Estado reactivo de los filtros, sembrado con lo que devolvió el servidor.
 const filtros = reactive({});
@@ -38,11 +44,31 @@ const hayFiltros = computed(() => Object.values(filtros).some((v) => v !== '' &&
 
 const aplicar = () => {
     const activos = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== '' && v != null));
+    if (sortCampo.value) {
+        activos.sort = sortCampo.value;
+        activos.dir = sortDir.value;
+    }
     router.get(route(props.routeName, props.routeParams), activos, {
         preserveState: true,
         preserveScroll: true,
         replace: true,
     });
+};
+
+const ordenarPor = (c) => {
+    const key = sortKeyDe(c);
+    if (sortCampo.value === key) {
+        sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc';
+    } else {
+        sortCampo.value = key;
+        sortDir.value = 'asc';
+    }
+    aplicar();
+};
+
+const flecha = (c) => {
+    if (sortCampo.value !== sortKeyDe(c)) return '↕';
+    return sortDir.value === 'asc' ? '↑' : '↓';
 };
 
 // Debounce para las entradas de texto.
@@ -75,7 +101,13 @@ const alignClass = (c) => (c.align === 'right' ? 'text-right' : c.align === 'cen
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
                 <thead>
                     <tr class="text-left text-gray-500">
-                        <th v-for="c in columns" :key="c.key" class="px-3 py-2 font-medium" :class="alignClass(c)">{{ c.label }}</th>
+                        <th v-for="c in columns" :key="c.key" class="px-3 py-2 font-medium" :class="alignClass(c)">
+                            <button v-if="c.sortable" type="button" @click="ordenarPor(c)" class="inline-flex items-center gap-1 hover:text-gray-700 dark:hover:text-gray-200">
+                                {{ c.label }}
+                                <span class="text-xs" :class="sortCampo === sortKeyDe(c) ? 'text-emerald-600' : 'text-gray-300'">{{ flecha(c) }}</span>
+                            </button>
+                            <template v-else>{{ c.label }}</template>
+                        </th>
                         <th v-if="hasActions" class="px-3 py-2 font-medium text-right">Acciones</th>
                     </tr>
                     <tr v-if="filtrables.length" class="align-top">

@@ -5,7 +5,7 @@ import PageHeader from '@/Components/PageHeader.vue';
 import Card from '@/Components/Card.vue';
 import DataTable from '@/Components/DataTable.vue';
 
-defineProps({ transferencias: Object, filtros: { type: Object, default: () => ({}) } });
+defineProps({ transferencias: Object, filtros: { type: Object, default: () => ({}) }, orden: { type: Object, default: () => ({}) } });
 
 const fecha = (f) => (f ? new Date(f).toLocaleDateString('es-MX') : '—');
 const columns = [
@@ -14,7 +14,7 @@ const columns = [
     { key: 'destino', label: 'Destino', filter: 'text' },
     { key: 'solicitud', label: 'Solicitud', filter: 'text' },
     { key: 'usuario', label: 'Usuario', filter: 'text' },
-    { key: 'detalles_count', label: 'Ítems', filter: false },
+    { key: 'detalles_count', label: 'Ítems', filter: false, sortable: true, sortKey: 'items' },
 ];
 </script>
 
@@ -27,7 +27,7 @@ const columns = [
         </PageHeader>
 
         <Card title="Historial de Transferencias">
-            <DataTable :columns="columns" :paginator="transferencias" route-name="transferencias.index" :filters="filtros" has-actions empty="No hay transferencias.">
+            <DataTable :columns="columns" :paginator="transferencias" route-name="transferencias.index" :filters="filtros" :orden="orden" has-actions empty="No hay transferencias.">
                 <template #col-folio="{ row }"><span class="font-semibold">{{ row.folio }}</span></template>
                 <template #col-fecha="{ row }">{{ fecha(row.fecha) }}</template>
                 <template #col-destino="{ row }"><span class="capitalize">{{ row.destino }}{{ row.area_destino ? ` — ${row.area_destino}` : '' }}</span></template>

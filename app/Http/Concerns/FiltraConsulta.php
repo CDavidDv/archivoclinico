@@ -54,4 +54,26 @@ trait FiltraConsulta
 
         return $activos;
     }
+
+    /**
+     * Aplica ordenamiento por columna (whitelist) según los parámetros
+     * ?sort= y ?dir= de la petición. Devuelve el orden aplicado para la vista.
+     *
+     * $ordenables mapea "clave de sort" => columna/alias a ordenar.
+     *
+     * @return array{campo: ?string, dir: string}
+     */
+    protected function aplicarOrden(Builder $query, Request $request, array $ordenables): array
+    {
+        $campo = $request->query('sort');
+        $dir   = strtolower((string) $request->query('dir')) === 'desc' ? 'desc' : 'asc';
+
+        if ($campo && isset($ordenables[$campo])) {
+            $query->reorder($ordenables[$campo], $dir);
+
+            return ['campo' => $campo, 'dir' => $dir];
+        }
+
+        return ['campo' => null, 'dir' => 'asc'];
+    }
 }

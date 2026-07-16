@@ -6,7 +6,7 @@ import Card from '@/Components/Card.vue';
 import DataTable from '@/Components/DataTable.vue';
 import { confirmarEliminar } from '@/lib/swal';
 
-defineProps({ medicamentos: Object, filtros: { type: Object, default: () => ({}) } });
+defineProps({ medicamentos: Object, filtros: { type: Object, default: () => ({}) }, orden: { type: Object, default: () => ({}) } });
 
 const columns = [
     { key: 'clave', label: 'Clave', filter: 'text' },
@@ -14,8 +14,8 @@ const columns = [
     { key: 'sustancia_activa', label: 'Sustancia activa', filter: 'text' },
     { key: 'presentacion', label: 'Presentación', filter: 'text' },
     { key: 'controlado', label: 'Controlado', filter: 'select', options: [{ value: '1', label: 'Sí' }, { value: '0', label: 'No' }] },
-    { key: 'stock_total', label: 'Stock', filter: false },
-    { key: 'stock_minimo', label: 'Mínimo', filter: false },
+    { key: 'stock_total', label: 'Stock', filter: false, sortable: true, sortKey: 'stock' },
+    { key: 'stock_minimo', label: 'Mínimo', filter: false, sortable: true, sortKey: 'stock_minimo' },
 ];
 
 const eliminar = async (m) => {
@@ -32,7 +32,7 @@ const eliminar = async (m) => {
         </PageHeader>
 
         <Card title="Catálogo de Medicamentos">
-            <DataTable :columns="columns" :paginator="medicamentos" route-name="medicamentos.index" :filters="filtros" has-actions empty="No hay medicamentos registrados.">
+            <DataTable :columns="columns" :paginator="medicamentos" route-name="medicamentos.index" :filters="filtros" :orden="orden" has-actions empty="No hay medicamentos registrados.">
                 <template #col-clave="{ row }"><span class="font-semibold">{{ row.clave }}</span></template>
                 <template #col-controlado="{ row }">
                     <span v-if="row.controlado" class="rounded-full bg-purple-100 text-purple-700 px-2 py-0.5 text-xs font-medium">Sí</span>

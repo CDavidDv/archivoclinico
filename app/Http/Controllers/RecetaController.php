@@ -36,9 +36,11 @@ class RecetaController extends Controller
             'estatus'         => 'exact',
         ]);
 
+        $orden = $this->aplicarOrden($query, $request, ['items' => 'detalles_count']);
+
         $recetas = $query->paginate(20)->withQueryString();
 
-        return Inertia::render('Recetas/Index', compact('recetas', 'filtros'));
+        return Inertia::render('Recetas/Index', compact('recetas', 'filtros', 'orden'));
     }
 
     public function create()

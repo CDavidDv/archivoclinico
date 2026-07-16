@@ -24,9 +24,14 @@ class MedicamentoController extends Controller
             'controlado'       => 'exact',
         ]);
 
+        $orden = $this->aplicarOrden($query, $request, [
+            'stock'        => 'stock_total',
+            'stock_minimo' => 'stock_minimo',
+        ]);
+
         $medicamentos = $query->paginate(20)->withQueryString();
 
-        return Inertia::render('Medicamentos/Index', compact('medicamentos', 'filtros'));
+        return Inertia::render('Medicamentos/Index', compact('medicamentos', 'filtros', 'orden'));
     }
 
     public function create()

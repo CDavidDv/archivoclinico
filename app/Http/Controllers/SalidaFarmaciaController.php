@@ -31,9 +31,11 @@ class SalidaFarmaciaController extends Controller
             'usuario' => fn ($q, $v) => $q->whereHas('usuario', fn ($u) => $u->where('nombre_usuario', 'like', "%{$v}%")),
         ]);
 
+        $orden = $this->aplicarOrden($query, $request, ['items' => 'detalles_count']);
+
         $salidas = $query->paginate(20)->withQueryString();
 
-        return Inertia::render('SalidasFarmacia/Index', compact('salidas', 'filtros'));
+        return Inertia::render('SalidasFarmacia/Index', compact('salidas', 'filtros', 'orden'));
     }
 
     public function create()
